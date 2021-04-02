@@ -1,0 +1,7 @@
+<h1>Potwierdź swój adres e-mail!</h1>
+
+<p>
+    Kliknij poniższy link, aby aktywować konto: <br><br>
+    <a href="{{ signedUrl|raw }}">Aktywuj konto</a>.
+    Ten link będzie aktywny przez {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+</p>
