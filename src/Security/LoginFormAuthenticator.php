@@ -84,9 +84,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             $userActivity->setActivity('LOGGING_INTO_BLOCKED_ACCOUNT');
             $userActivity->setDate(new \DateTime());
         
-            $em = $this->entityManager;
-            $em->persist($userActivity);
-            $em->flush();
+            $this->entityManager->persist($userActivity);
+            $this->entityManager->flush();
 
             throw new CustomUserMessageAuthenticationException('Twoje konto zostało zablokowane');
         } else if (!$user->isVerified()) {
@@ -97,9 +96,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             $userActivity->setActivity('LOGGING_THROUGH_UNVERIFIED_EMAIL');
             $userActivity->setDate(new \DateTime());
         
-            $em = $this->entityManager;
-            $em->persist($userActivity);
-            $em->flush();
+            $this->entityManager->persist($userActivity);
+            $this->entityManager->flush();
 
             throw new CustomUserMessageAuthenticationException('Twój adres e-mail nie został jeszcze potwierdzony');
         } else if (!$user->getIsActive()) {
@@ -110,9 +108,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             $userActivity->setActivity('LOGGING_INTO_DEACTIVATED_ACCOUNT');
             $userActivity->setDate(new \DateTime());
         
-            $em = $this->entityManager;
-            $em->persist($userActivity);
-            $em->flush();
+            $this->entityManager->persist($userActivity);
+            $this->entityManager->flush();
 
             throw new CustomUserMessageAuthenticationException('Twoje konto zostało przekazane do usunięcia');
         } else {
@@ -133,9 +130,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             $userActivity->setActivity('LOGGING_THROUGH_WRONG_PASSWORD');
             $userActivity->setDate(new \DateTime());
         
-            $em = $this->entityManager;
-            $em->persist($userActivity);
-            $em->flush();
+            $this->entityManager->persist($userActivity);
+            $this->entityManager->flush();
         }
 
         return $isPasswordValid;
@@ -154,19 +150,6 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
         }
-
-        $userActivity = new UserActivity();
-        $userActivity->setUser($this->user);
-        $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
-        $userActivity->setActivity('LOGGED_IN');
-        $userActivity->setDate(new \DateTime());
-
-        $this->user->setIsLoggedIn(1);
-    
-        $em = $this->entityManager;
-        $em->persist($userActivity);
-        $em->persist($this->user);
-        $em->flush();
 
         return new RedirectResponse($this->urlGenerator->generate('index'));
     }
