@@ -76,42 +76,6 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         if (!$user) {
             // fail authentication with a custom error (wrong e-mail)
             throw new CustomUserMessageAuthenticationException('Nieprawidłowy e-mail lub hasło');
-        } else if ($user->getIsBlocked()) {
-            // fail authentication with a custom error (blocked account)
-            $userActivity = new UserActivity();
-            $userActivity->setUser($user);
-            $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
-            $userActivity->setActivity('LOGGING_INTO_BLOCKED_ACCOUNT');
-            $userActivity->setDate(new \DateTime());
-        
-            $this->entityManager->persist($userActivity);
-            $this->entityManager->flush();
-
-            throw new CustomUserMessageAuthenticationException('Twoje konto zostało zablokowane');
-        } else if (!$user->isVerified()) {
-            // fail authentication with a custom error (unverified e-mail)
-            $userActivity = new UserActivity();
-            $userActivity->setUser($user);
-            $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
-            $userActivity->setActivity('LOGGING_THROUGH_UNVERIFIED_EMAIL');
-            $userActivity->setDate(new \DateTime());
-        
-            $this->entityManager->persist($userActivity);
-            $this->entityManager->flush();
-
-            throw new CustomUserMessageAuthenticationException('Twój adres e-mail nie został jeszcze potwierdzony');
-        } else if (!$user->getIsActive()) {
-            // fail authentication with a custom error (account deactivated)
-            $userActivity = new UserActivity();
-            $userActivity->setUser($user);
-            $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
-            $userActivity->setActivity('LOGGING_INTO_DEACTIVATED_ACCOUNT');
-            $userActivity->setDate(new \DateTime());
-        
-            $this->entityManager->persist($userActivity);
-            $this->entityManager->flush();
-
-            throw new CustomUserMessageAuthenticationException('Twoje konto zostało przekazane do usunięcia');
         } else {
             $this->user = $user;
         }
@@ -124,14 +88,53 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         $isPasswordValid = $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
 
         if (!$isPasswordValid) {
+            // fail authentication with a custom error (wrong password)
             $userActivity = new UserActivity();
-            $userActivity->setUser($user);
+            $userActivity->setUser($this->user);
             $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
             $userActivity->setActivity('LOGGING_THROUGH_WRONG_PASSWORD');
             $userActivity->setDate(new \DateTime());
         
             $this->entityManager->persist($userActivity);
             $this->entityManager->flush();
+
+            throw new CustomUserMessageAuthenticationException('Nieprawidłowy e-mail lub hasło');
+        } else if ($this->user->getIsBlocked()) {
+            // fail authentication with a custom error (blocked account)
+            $userActivity = new UserActivity();
+            $userActivity->setUser($this->user);
+            $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
+            $userActivity->setActivity('LOGGING_INTO_BLOCKED_ACCOUNT');
+            $userActivity->setDate(new \DateTime());
+        
+            $this->entityManager->persist($userActivity);
+            $this->entityManager->flush();
+
+            throw new CustomUserMessageAuthenticationException('Twoje konto zostało zablokowane');
+        } else if (!$this->user->isVerified()) {
+            // fail authentication with a custom error (unverified e-mail)
+            $userActivity = new UserActivity();
+            $userActivity->setUser($this->user);
+            $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
+            $userActivity->setActivity('LOGGING_THROUGH_UNVERIFIED_EMAIL');
+            $userActivity->setDate(new \DateTime());
+        
+            $this->entityManager->persist($userActivity);
+            $this->entityManager->flush();
+
+            throw new CustomUserMessageAuthenticationException('Twój adres e-mail nie został jeszcze potwierdzony');
+        } else if (!$this->user->getIsActive()) {
+            // fail authentication with a custom error (account deactivated)
+            $userActivity = new UserActivity();
+            $userActivity->setUser($this->user);
+            $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
+            $userActivity->setActivity('LOGGING_INTO_DEACTIVATED_ACCOUNT');
+            $userActivity->setDate(new \DateTime());
+        
+            $this->entityManager->persist($userActivity);
+            $this->entityManager->flush();
+
+            throw new CustomUserMessageAuthenticationException('Twoje konto zostało przekazane do usunięcia');
         }
 
         return $isPasswordValid;
@@ -150,6 +153,16 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
         }
+
+        // all other logs are located in SecurityController
+        $userActivity = new UserActivity();
+        $userActivity->setUser($this->user);
+        $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
+        $userActivity->setActivity('AUTHORIZATION');
+        $userActivity->setDate(new \DateTime());
+    
+        $this->entityManager->persist($userActivity);
+        $this->entityManager->flush();
 
         return new RedirectResponse($this->urlGenerator->generate('index'));
     }

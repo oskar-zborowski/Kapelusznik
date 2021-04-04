@@ -1,23 +1,27 @@
-let inFormOrLink = false;
+// const aClickListener = document.querySelector('a');
+// const formSubmitListener = document.querySelector('form');
 
-$('a').on('click', function() { 
-    inFormOrLink = true;
-});
+let isFormOrLink = false;
+let delayExitResponse;
 
-$('form').on('submit', function() {
-    inFormOrLink = true;
-});
+// aClickListener.addEventListener('click', function (e) {    
+//     isFormOrLink = true;
+// }, false);
 
-$(window).on('beforeunload', function() { 
-    if (!inFormOrLink)
+// formSubmitListener.addEventListener('submit', function (e) {    
+//     isFormOrLink = true;
+// }, false);
+
+window.onbeforeunload = function (e) {
+    if (!isFormOrLink)
         sendRequest('GET', '/fakeExit');
-});
+}
 
 const delayExit = async () =>
 {
-    const response = await sendRequest('GET', '/delayExit');
+    delayExitResponse = await sendRequest('GET', '/delayExit');
 
-    if (response == 1)
+    if (delayExitResponse == 1)
         delayExit();
 }
 

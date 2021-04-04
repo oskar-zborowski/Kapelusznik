@@ -36,11 +36,11 @@ class RegistrationController extends AbstractController
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
-        $error = NULL;
+        $passwordConfirmationError = NULL;
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('plainPassword')->getData() != $form->get('confirmationPassword')->getData()) {
-                $error = 'Podane hasła różnią się';
+                $passwordConfirmationError = 'Podane hasła różnią się';
             } else {
                 // encode the plain password
                 $user->setPassword(
@@ -96,7 +96,7 @@ class RegistrationController extends AbstractController
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
-            'error' => $error
+            'error' => $passwordConfirmationError
         ]);
     }
 

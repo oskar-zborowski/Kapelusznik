@@ -43,9 +43,9 @@ class SecurityController extends AbstractController
     public function fakeExit(SessionInterface $session)
     {
         if ($this->getUser()) {
-            do {
+            do
                 $session->set('userSessionCodePattern', mt_rand());
-            } while ($session->get('userSessionCodePattern') == $session->get('userSessionCode'));
+            while ($session->get('userSessionCodePattern') == $session->get('userSessionCode'));
 
             $user = $this->getUser();
             $user->setIsLoggedIn(0);
@@ -53,6 +53,9 @@ class SecurityController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
+
+            $actualDate = new \DateTime();
+            $session->set('userSessionRememberedDate', $actualDate->format('Y-m-d H:i:s'));
         }
 
         return new Response();
@@ -66,13 +69,13 @@ class SecurityController extends AbstractController
         if ($this->getUser()) {
             $entityManager = $this->getDoctrine()->getManager();
 
-            if ($session->get('userSessionCodePattern'));
+            if ($session->get('userSessionCodePattern') && $session->get('userSessionCode'));
             else {
                 $session->set('userSessionCodePattern', mt_rand());
 
-                do {
+                do
                     $session->set('userSessionCode', mt_rand());
-                } while ($session->get('userSessionCode') == $session->get('userSessionCodePattern'));
+                while ($session->get('userSessionCode') == $session->get('userSessionCodePattern'));
             }
 
             if ($session->get('userSessionCode') != $session->get('userSessionCodePattern')) {
@@ -84,8 +87,24 @@ class SecurityController extends AbstractController
                 $entityManager->persist($user);
                 $entityManager->flush();
             }
+
+            if ($session->get('userSessionRememberedDate'));
+            else {
+                $actualDate = new \DateTime();
+                $session->set('userSessionRememberedDate', $actualDate->format('Y-m-d H:i:s'));
+            }
+
+            $year = (int)($session->get('userSessionRememberedDate')[0] . $session->get('userSessionRememberedDate')[1] . $session->get('userSessionRememberedDate')[2] . $session->get('userSessionRememberedDate')[3]);
+            $month = (int)($session->get('userSessionRememberedDate')[5] . $session->get('userSessionRememberedDate')[6]);
+            $day = (int)($session->get('userSessionRememberedDate')[8] . $session->get('userSessionRememberedDate')[9]);
+            $hour = (int)($session->get('userSessionRememberedDate')[11] . $session->get('userSessionRememberedDate')[12]);
+            $minute = (int)($session->get('userSessionRememberedDate')[14] . $session->get('userSessionRememberedDate')[15]);
+            $second = (int)($session->get('userSessionRememberedDate')[17] . $session->get('userSessionRememberedDate')[18]);
+
+            $dateRemembered = mktime($hour, $minute, $second, $month, $day, $year);
+            $actualDate = time();
             
-            if ($session->get('delayExitId')) {
+            if ($session->get('delayExitId') && ($actualDate <= $dateRemembered + 30)) {
                 $userActivity = $entityManager->getRepository(UserActivity::class)->findOneBy(
                     ['id' => $session->get('delayExitId')]);
                 $userActivity->setDate(new \DateTime());
@@ -112,6 +131,8 @@ class SecurityController extends AbstractController
                 $session->set('delayExitId', $userActivity[1]->getId());
             }
 
+            $actualDate = new \DateTime();
+            $session->set('userSessionRememberedDate', $actualDate->format('Y-m-d H:i:s'));
             $response = 1;
         } else {
             $session->set('delayExitId', 0);

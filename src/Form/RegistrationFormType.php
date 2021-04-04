@@ -27,7 +27,7 @@ class RegistrationFormType extends AbstractType
                     ]),
                     new Length([
                         'maxMessage' => 'Twoje imię i nazwisko nie może przekraczać {{ limit }} znaków',
-                        // max length allowed by Symfony for security reasons
+                        // max length allowed by database field
                         'max' => 50
                     ])
                 ]
@@ -40,7 +40,7 @@ class RegistrationFormType extends AbstractType
                     ]),
                     new Length([
                         'maxMessage' => 'Twój adres e-mail nie może przekraczać {{ limit }} znaków',
-                        // max length allowed by Symfony for security reasons
+                        // max length allowed by database field
                         'max' => 180
                     ])
                 ]
@@ -59,7 +59,7 @@ class RegistrationFormType extends AbstractType
                         'minMessage' => 'Twoje hasło musi mieć conajmniej {{ limit }} znaków',
                         'maxMessage' => 'Twoje hasło nie może przekraczać {{ limit }} znaków',
                         // max length allowed by Symfony for security reasons
-                        'max' => 20
+                        'max' => 30
                     ])
                 ]
             ])
@@ -77,7 +77,7 @@ class RegistrationFormType extends AbstractType
                         'minMessage' => 'Twoje hasło musi mieć conajmniej {{ limit }} znaków',
                         'maxMessage' => 'Twoje hasło nie może przekraczać {{ limit }} znaków',
                         // max length allowed by Symfony for security reasons
-                        'max' => 20
+                        'max' => 30
                     ])
                 ]
             ])
