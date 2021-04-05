@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
@@ -45,41 +46,30 @@ class RegistrationFormType extends AbstractType
                     ])
                 ]
             ])
-            ->add('plainPassword', PasswordType::class, [
-                // instead of being set onto the object directly,
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'first_options' => [
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Podaj hasło',
+                        ]),
+                        new Length([
+                            'min' => 8,
+                            'minMessage' => 'Twoje hasło musi mieć conajmniej {{ limit }} znaków',
+                            'maxMessage' => 'Twoje hasło nie może przekraczać {{ limit }} znaków',
+                            // max length allowed by Symfony for security reasons
+                            'max' => 30,
+                        ]),
+                    ],
+                    'label' => 'Hasło',
+                ],
+                'second_options' => [
+                    'label' => 'Potwierdź hasło',
+                ],
+                'invalid_message' => 'Hasła muszą być identyczne',
+                // Instead of being set onto the object directly,
                 // this is read and encoded in the controller
-                'label' => 'Hasło',
                 'mapped' => false,
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Podaj hasło',
-                    ]),
-                    new Length([
-                        'min' => 8,
-                        'minMessage' => 'Twoje hasło musi mieć conajmniej {{ limit }} znaków',
-                        'maxMessage' => 'Twoje hasło nie może przekraczać {{ limit }} znaków',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 30
-                    ])
-                ]
-            ])
-            ->add('confirmationPassword', PasswordType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
-                'label' => 'Potwierdź hasło',
-                'mapped' => false,
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Potwierdź hasło',
-                    ]),
-                    new Length([
-                        'min' => 8,
-                        'minMessage' => 'Twoje hasło musi mieć conajmniej {{ limit }} znaków',
-                        'maxMessage' => 'Twoje hasło nie może przekraczać {{ limit }} znaków',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 30
-                    ])
-                ]
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'label' => 'Akceptuję warunki',

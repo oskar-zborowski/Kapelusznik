@@ -39,59 +39,55 @@ class RegistrationController extends AbstractController
         $passwordConfirmationError = NULL;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('plainPassword')->getData() != $form->get('confirmationPassword')->getData()) {
-                $passwordConfirmationError = 'Podane hasła różnią się';
-            } else {
-                // encode the plain password
-                $user->setPassword(
-                    $passwordEncoder->encodePassword(
-                        $user,
-                        $form->get('plainPassword')->getData()
-                    )
-                );
+            // encode the plain password
+            $user->setPassword(
+                $passwordEncoder->encodePassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
 
-                $code = NULL;
-                $entityManager = $this->getDoctrine()->getManager();
+            $code = NULL;
+            $entityManager = $this->getDoctrine()->getManager();
 
-                do {
-                    for ($i=0; $i<6; $i++)
-                    {
-                        $rand = rand(0, 35);
-                    
-                        if ($rand < 10)
-                            $code .= chr($rand+48);
-                        else
-                            $code .= chr($rand+55);
-                    }
+            do {
+                for ($i=0; $i<6; $i++)
+                {
+                    $rand = rand(0, 35);
+                
+                    if ($rand < 10)
+                        $code .= chr($rand+48);
+                    else
+                        $code .= chr($rand+55);
+                }
 
-                    $codeVerification = $entityManager->getRepository(User::class)->findOneBy(['code' => $code]);
-                } while ($codeVerification);
+                $codeVerification = $entityManager->getRepository(User::class)->findOneBy(['code' => $code]);
+            } while ($codeVerification);
 
-                $user->setCode($code);
-                $user->setRoles(["ROLE_USER"]);
-                $user->setProfilePicture('unk.jpg');
-                $user->setActiveLoginForm('s');
-                $user->setDateOfJoining(new \DateTime());
-                $user->setIsActive(1);
-                $user->setIsBlocked(0);
-                $user->setIsLoggedIn(0);
-                $user->setIsVerified(0);
+            $user->setCode($code);
+            $user->setRoles(["ROLE_USER"]);
+            $user->setProfilePicture('unk.jpg');
+            $user->setActiveLoginForm('s');
+            $user->setDateOfJoining(new \DateTime());
+            $user->setIsActive(1);
+            $user->setIsBlocked(0);
+            $user->setIsLoggedIn(0);
+            $user->setIsVerified(0);
 
-                $entityManager->persist($user);
-                $entityManager->flush();
+            $entityManager->persist($user);
+            $entityManager->flush();
 
-                // generate a signed url and email it to the user
-                $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-                    (new TemplatedEmail())
-                        ->from(new Address('biuro.prasowe.warszawa@gmail.com', 'Kapelusznik.pl'))
-                        ->to($user->getEmail())
-                        ->subject('Potwierdź swój adres e-mail')
-                        ->htmlTemplate('registration/confirmation_email.html.twig')
-                );
-                // do anything else you need here, like send an email
+            // generate a signed url and email it to the user
+            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+                (new TemplatedEmail())
+                    ->from(new Address('biuro.prasowe.warszawa@gmail.com', 'Kapelusznik.pl'))
+                    ->to($user->getEmail())
+                    ->subject('Potwierdź swój adres e-mail')
+                    ->htmlTemplate('registration/confirmation_email.html.twig')
+            );
+            // do anything else you need here, like send an email
 
-                return $this->redirectToRoute('app_login');
-            }
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('registration/register.html.twig', [

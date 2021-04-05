@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }}- Resetowanie hasła{% endblock %}
+
+{% block body %}
+    {% for flashError in app.flashes('reset_password_error') %}
+        <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+    {% endfor %}
+
+    <div class="container p-5">
+        <h1 class="h3 mb-3 mt-5 font-weight-normal text-center">Resetowanie hasła</h1>
+
+        {% form_theme requestForm 'bootstrap_4_layout.html.twig' %}
+        {{ form_start(requestForm) }}
+            {{ form_row(requestForm.email) }}
+
+            <button class="btn btn-primary mt-3">Wyślij</button>
+        {{ form_end(requestForm) }}
+    </div>
+{% endblock %}
