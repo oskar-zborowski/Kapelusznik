@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Agreement;
 use App\Entity\User;
+use App\Entity\UserAgreement;
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
 use App\Repository\UserRepository;
@@ -32,7 +34,29 @@ class RegistrationController extends AbstractController
         if ($this->getUser()) {
             return $this->redirectToRoute('index');
         }
-        
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $agreement = $entityManager->getRepository(Agreement::class)->findBy(['in_registration_form' => 1], ['id' => 'DESC']);
+        $checked = array();
+        $reg_link = array();
+
+        foreach ($agreement as $a) {
+            $flag = false;
+
+            for ($i=0; $i<count($checked); $i++) {
+                if ($a->getSignature() == $checked[$i]->getSignature()) {
+                    $flag = true;
+                    break;
+                }
+            }
+
+            if (!$flag && $a->getDateOfEntry() <= new \DateTime())
+                $checked[] = $a;
+        }
+
+        for ($i=0; $i<count($checked); $i++)
+            $reg_link[$checked[$i]->getId()] = $checked[$i]->getContent();
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -48,7 +72,6 @@ class RegistrationController extends AbstractController
             );
 
             $code = NULL;
-            $entityManager = $this->getDoctrine()->getManager();
 
             do {
                 for ($i=0; $i<6; $i++)
@@ -77,6 +100,30 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
+            if ($form->get('2')->getData()) {
+                $agreement = $entityManager->getRepository(Agreement::class)->findOneBy(['id' => 2]);
+
+                $userAgreement = new UserAgreement;
+                $userAgreement->setUser($user);
+                $userAgreement->setAgreement($agreement);
+                $userAgreement->setDateOfAccepting(new \DateTime());
+
+                $entityManager->persist($userAgreement);
+                $entityManager->flush();
+            }
+
+            if ($form->get('3')->getData()) {
+                $agreement = $entityManager->getRepository(Agreement::class)->findOneBy(['id' => 3]);
+
+                $userAgreement = new UserAgreement;
+                $userAgreement->setUser($user);
+                $userAgreement->setAgreement($agreement);
+                $userAgreement->setDateOfAccepting(new \DateTime());
+
+                $entityManager->persist($userAgreement);
+                $entityManager->flush();
+            }
+
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
                 (new TemplatedEmail())
@@ -92,7 +139,8 @@ class RegistrationController extends AbstractController
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
-            'error' => $passwordConfirmationError
+            'error' => $passwordConfirmationError,
+            'reg_link' => $reg_link
         ]);
     }
 

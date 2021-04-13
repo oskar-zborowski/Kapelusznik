@@ -98,9 +98,21 @@ class User implements UserInterface
      */
     private $isVerified = false;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Agreement::class, mappedBy="creator")
+     */
+    private $agreements;
+
+    /**
+     * @ORM\OneToMany(targetEntity=UserAgreement::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $userAgreements;
+
     public function __construct()
     {
         $this->userActivities = new ArrayCollection();
+        $this->agreements = new ArrayCollection();
+        $this->userAgreements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -342,6 +354,66 @@ class User implements UserInterface
     public function setIsVerified(bool $isVerified): self
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Agreement[]
+     */
+    public function getAgreements(): Collection
+    {
+        return $this->agreements;
+    }
+
+    public function addAgreement(Agreement $agreement): self
+    {
+        if (!$this->agreements->contains($agreement)) {
+            $this->agreements[] = $agreement;
+            $agreement->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAgreement(Agreement $agreement): self
+    {
+        if ($this->agreements->removeElement($agreement)) {
+            // set the owning side to null (unless already changed)
+            if ($agreement->getCreator() === $this) {
+                $agreement->setCreator(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|UserAgreement[]
+     */
+    public function getUserAgreements(): Collection
+    {
+        return $this->userAgreements;
+    }
+
+    public function addUserAgreement(UserAgreement $userAgreement): self
+    {
+        if (!$this->userAgreements->contains($userAgreement)) {
+            $this->userAgreements[] = $userAgreement;
+            $userAgreement->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserAgreement(UserAgreement $userAgreement): self
+    {
+        if ($this->userAgreements->removeElement($userAgreement)) {
+            // set the owning side to null (unless already changed)
+            if ($userAgreement->getUser() === $this) {
+                $userAgreement->setUser(null);
+            }
+        }
 
         return $this;
     }

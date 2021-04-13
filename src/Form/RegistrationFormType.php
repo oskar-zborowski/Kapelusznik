@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Agreement;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -17,6 +19,13 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class RegistrationFormType extends AbstractType
 {
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -71,16 +80,47 @@ class RegistrationFormType extends AbstractType
                 // this is read and encoded in the controller
                 'mapped' => false,
             ])
-            ->add('agreeTerms', CheckboxType::class, [
-                'label' => 'Akceptuję warunki',
-                'mapped' => false,
-                'constraints' => [
-                    new IsTrue([
-                        'message' => 'Musisz zaakceptować warunki',
-                    ])
-                ]
-            ])
         ;
+
+        $agreement = $this->entityManager->getRepository(Agreement::class)->findBy(['in_registration_form' => 1], ['id' => 'DESC']);
+        $checked = array();
+
+        foreach ($agreement as $a) {
+            $flag = false;
+
+            for ($i=0; $i<count($checked); $i++) {
+                if ($a->getSignature() == $checked[$i]->getSignature()) {
+                    $flag = true;
+                    break;
+                }
+            }
+
+            if (!$flag && $a->getDateOfEntry() <= new \DateTime()) {
+                $checked[] = $a;
+
+                if ($a->getIsRequired()) {
+                    $builder
+                        ->add($a->getId(), CheckboxType::class, [
+                            'label' => $a->getName(),
+                            'mapped' => false,
+                            'constraints' => [
+                                new IsTrue([
+                                    'message' => 'Musisz zaakceptować to pole',
+                                ])
+                            ]
+                        ])
+                    ;
+                } else {
+                    $builder
+                        ->add($a->getId(), CheckboxType::class, [
+                            'label' => $a->getName(),
+                            'mapped' => false,
+                            'required' => false,
+                        ])
+                    ;
+                }
+            }
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
