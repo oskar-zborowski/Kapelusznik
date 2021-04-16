@@ -1,0 +1,33 @@
+body {
+    background-color: #212529;
+    /*background: url("../img/footer_lodyas.png");*/
+    /*background-color: #ccc;*/
+    /*height: 500px;*/
+    /*background-position: center;*/
+    /*background-repeat: no-repeat;*/
+    /*background-size: cover;*/
+    /*position: relative;*/
+
+    color: white;
+}
+
+nav {
+    position: sticky !important;
+    top: 0px;
+}
+
+.navbar-brand > img {
+    height: 40px;
+    margin: 5px;
+}
+
+.main {
+    /*background: rgba(255, 255, 255, 0.3);*/
+    background: url("../img/footer_lodyas.png");
+    border-radius: 6px;
+    padding: 10px;
+}
+
+input {
+    background-color: #ccc !important;
+}

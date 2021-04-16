@@ -3,7 +3,7 @@
 {% block title %}{{ parent() }} - Logowanie{% endblock %}
 
 {% block body %}
-    <div class="container p-5">
+    <div class="container p-5 main">
         <form method="post">
             {% if error %}
                 <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -38,5 +38,7 @@
                 Zaloguj się
             </button>
         </form>
+
+        <a href="{{ path('app_forgot_password_request') }}">Nie pamiętam hasła</a>
     </div>
 {% endblock %}
