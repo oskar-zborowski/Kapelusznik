@@ -23,7 +23,7 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=180, unique=true, nullable=true)
      */
     private $email;
 
@@ -107,6 +107,16 @@ class User implements UserInterface
      * @ORM\OneToMany(targetEntity=UserAgreement::class, mappedBy="user", orphanRemoval=true)
      */
     private $userAgreements;
+
+    /**
+     * @ORM\Column(type="string", length=1, nullable=true)
+     */
+    private $gender;
+
+    /**
+     * @ORM\Column(type="string", length=180, unique=true, nullable=true)
+     */
+    private $external_authentication;
 
     public function __construct()
     {
@@ -414,6 +424,30 @@ class User implements UserInterface
                 $userAgreement->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(?string $gender): self
+    {
+        $this->gender = $gender;
+
+        return $this;
+    }
+
+    public function getExternalAuthentication(): ?string
+    {
+        return $this->external_authentication;
+    }
+
+    public function setExternalAuthentication(?string $external_authentication): self
+    {
+        $this->external_authentication = $external_authentication;
 
         return $this;
     }

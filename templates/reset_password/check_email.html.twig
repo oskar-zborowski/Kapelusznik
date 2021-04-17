@@ -7,5 +7,5 @@
         Na podany przez Ciebie adres e-mail została wysłana wiadomość z linkiem przenoszącym do panelu umożliwiającego zresetowanie hasła.<br>
         Będzie on ważny przez {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
     </p>
-    <p>Jeżeli nie otrzymałeś wiadomości mail zajrzyj do spamu lub <a href="{{ path('app_forgot_password_request') }}">spróbuj ponownie</a>.</p>
+    <p>Jeżeli nie otrzymałeś wiadomości zajrzyj do spamu lub <a href="{{ path('app_forgot_password_request') }}">spróbuj ponownie</a>.</p>
 {% endblock %}

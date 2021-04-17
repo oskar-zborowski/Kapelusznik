@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Agreement;
 use App\Entity\User;
+use App\Service\AgreementService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -20,27 +21,29 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class RegistrationFormType extends AbstractType
 {
     private $entityManager;
+    private $agreementService;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, AgreementService $agreementService)
     {
         $this->entityManager = $entityManager;
+        $this->agreementService = $agreementService;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Imię i nazwisko',
+                'label' => 'Nazwa',
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Podaj imię i nazwisko',
+                        'message' => 'Podaj nazwę pod jaką będziesz widoczny',
                     ]),
                     new Length([
-                        'maxMessage' => 'Twoje imię i nazwisko nie może przekraczać {{ limit }} znaków',
+                        'maxMessage' => 'Twoja nazwa nie może przekraczać {{ limit }} znaków',
                         // max length allowed by database field
                         'max' => 50
-                    ])
-                ]
+                    ]),
+                ],
             ])
             ->add('email', EmailType::class, [
                 'label' => 'E-mail',
@@ -51,7 +54,7 @@ class RegistrationFormType extends AbstractType
                     new Length([
                         'maxMessage' => 'Twój adres e-mail nie może przekraczać {{ limit }} znaków',
                         // max length allowed by database field
-                        'max' => 180
+                        'max' => 180,
                     ])
                 ]
             ])
@@ -82,43 +85,29 @@ class RegistrationFormType extends AbstractType
             ])
         ;
 
-        $agreement = $this->entityManager->getRepository(Agreement::class)->findBy(['in_registration_form' => 1], ['id' => 'DESC']);
-        $checked = array();
+        $agreement = $this->agreementService->findCurrentAgreements();
 
         foreach ($agreement as $a) {
-            $flag = false;
-
-            for ($i=0; $i<count($checked); $i++) {
-                if ($a->getSignature() == $checked[$i]->getSignature()) {
-                    $flag = true;
-                    break;
-                }
-            }
-
-            if (!$flag && $a->getDateOfEntry() <= new \DateTime()) {
-                $checked[] = $a;
-
-                if ($a->getIsRequired()) {
-                    $builder
-                        ->add($a->getId(), CheckboxType::class, [
-                            'label' => $a->getName(),
-                            'mapped' => false,
-                            'constraints' => [
-                                new IsTrue([
-                                    'message' => 'Musisz zaakceptować to pole',
-                                ])
-                            ]
-                        ])
-                    ;
-                } else {
-                    $builder
-                        ->add($a->getId(), CheckboxType::class, [
-                            'label' => $a->getName(),
-                            'mapped' => false,
-                            'required' => false,
-                        ])
-                    ;
-                }
+            if ($a->getIsRequired()) {
+                $builder
+                    ->add('agr' . $a->getId(), CheckboxType::class, [
+                        'label' => false,
+                        'mapped' => false,
+                        'constraints' => [
+                            new IsTrue([
+                                'message' => 'Musisz zaakceptować to pole',
+                            ]),
+                        ],
+                    ])
+                ;
+            } else {
+                $builder
+                    ->add('agr' . $a->getId(), CheckboxType::class, [
+                        'label' => false,
+                        'mapped' => false,
+                        'required' => false,
+                    ])
+                ;
             }
         }
     }

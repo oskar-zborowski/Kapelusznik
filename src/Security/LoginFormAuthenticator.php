@@ -67,18 +67,16 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     {
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
 
-        if (!$this->csrfTokenManager->isTokenValid($token)) {
+        if (!$this->csrfTokenManager->isTokenValid($token))
             throw new InvalidCsrfTokenException();
-        }
 
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
 
         if (!$user) {
             // fail authentication with a custom error (wrong e-mail)
             throw new CustomUserMessageAuthenticationException('Nieprawidłowy e-mail lub hasło');
-        } else {
+        } else
             $this->user = $user;
-        }
 
         return $user;
     }
@@ -150,15 +148,14 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
+        if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey))
             return new RedirectResponse($targetPath);
-        }
 
         // all other logs are located in SecurityController
         $userActivity = new UserActivity();
         $userActivity->setUser($this->user);
         $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
-        $userActivity->setActivity('AUTHORIZATION');
+        $userActivity->setActivity('AUTHENTICATION');
         $userActivity->setDate(new \DateTime());
     
         $this->entityManager->persist($userActivity);

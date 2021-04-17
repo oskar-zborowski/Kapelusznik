@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Agreement;
 use App\Entity\User;
 use App\Entity\UserAgreement;
+use App\Entity\UserActivity;
+use App\Service\AgreementService;
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
 use App\Repository\UserRepository;
@@ -20,10 +22,12 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 class RegistrationController extends AbstractController
 {
     private $emailVerifier;
+    private $agreementService;
 
-    public function __construct(EmailVerifier $emailVerifier)
+    public function __construct(EmailVerifier $emailVerifier, AgreementService $agreementService)
     {
         $this->emailVerifier = $emailVerifier;
+        $this->agreementService = $agreementService;
     }
 
     /**
@@ -31,31 +35,16 @@ class RegistrationController extends AbstractController
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
-        if ($this->getUser()) {
+        if ($this->getUser())
             return $this->redirectToRoute('index');
-        }
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $agreement = $entityManager->getRepository(Agreement::class)->findBy(['in_registration_form' => 1], ['id' => 'DESC']);
-        $checked = array();
-        $reg_link = array();
+        $agreement = $this->agreementService->findCurrentAgreements();
+        $agr = null;
 
         foreach ($agreement as $a) {
-            $flag = false;
-
-            for ($i=0; $i<count($checked); $i++) {
-                if ($a->getSignature() == $checked[$i]->getSignature()) {
-                    $flag = true;
-                    break;
-                }
-            }
-
-            if (!$flag && $a->getDateOfEntry() <= new \DateTime())
-                $checked[] = $a;
+            $agr['agr' . $a->getId()]['content'] = $a->getContent();
+            $agr['agr' . $a->getId()]['name'] = $a->getName();
         }
-
-        for ($i=0; $i<count($checked); $i++)
-            $reg_link[$checked[$i]->getId()] = $checked[$i]->getContent();
 
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -72,6 +61,7 @@ class RegistrationController extends AbstractController
             );
 
             $code = NULL;
+            $entityManager = $this->getDoctrine()->getManager();
 
             do {
                 for ($i=0; $i<6; $i++)
@@ -100,28 +90,16 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            if ($form->get('2')->getData()) {
-                $agreement = $entityManager->getRepository(Agreement::class)->findOneBy(['id' => 2]);
-
-                $userAgreement = new UserAgreement;
-                $userAgreement->setUser($user);
-                $userAgreement->setAgreement($agreement);
-                $userAgreement->setDateOfAccepting(new \DateTime());
-
-                $entityManager->persist($userAgreement);
-                $entityManager->flush();
-            }
-
-            if ($form->get('3')->getData()) {
-                $agreement = $entityManager->getRepository(Agreement::class)->findOneBy(['id' => 3]);
-
-                $userAgreement = new UserAgreement;
-                $userAgreement->setUser($user);
-                $userAgreement->setAgreement($agreement);
-                $userAgreement->setDateOfAccepting(new \DateTime());
-
-                $entityManager->persist($userAgreement);
-                $entityManager->flush();
+            foreach ($agreement as $a) {
+                if ($form->get('agr' . $a->getId())->getData()) {
+                    $userAgreement = new UserAgreement;
+                    $userAgreement->setUser($user);
+                    $userAgreement->setAgreement($a);
+                    $userAgreement->setDateOfAccepting(new \DateTime());
+    
+                    $entityManager->persist($userAgreement);
+                    $entityManager->flush();
+                }
             }
 
             // generate a signed url and email it to the user
@@ -140,7 +118,7 @@ class RegistrationController extends AbstractController
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
             'error' => $passwordConfirmationError,
-            'reg_link' => $reg_link
+            'agr' => $agr,
         ]);
     }
 
@@ -151,15 +129,13 @@ class RegistrationController extends AbstractController
     {
         $id = $request->get('id');
 
-        if (null === $id) {
+        if (null === $id)
             return $this->redirectToRoute('app_login');
-        }
 
         $user = $userRepository->find($id);
 
-        if (null === $user) {
+        if (null === $user)
             return $this->redirectToRoute('app_login');
-        }
 
         // validate email confirmation link, sets User::isVerified=true and persists
         try {
@@ -171,6 +147,16 @@ class RegistrationController extends AbstractController
         }
 
         // @TODO Change the redirect on success and handle or remove the flash message in your templates
+        $userActivity = new UserActivity();
+        $userActivity->setUser($user);
+        $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
+        $userActivity->setActivity('EMAIL_CONFIRMATION');
+        $userActivity->setDate(new \DateTime());
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($userActivity);
+        $entityManager->flush();
+
         $this->addFlash('success', 'Twój adres e-mail został zweryfikowany!');
 
         return $this->redirectToRoute('app_login');

@@ -23,8 +23,8 @@ class ResetPasswordRequestFormType extends AbstractType
                     new Length([
                         'maxMessage' => 'Twój adres e-mail nie może przekraczać {{ limit }} znaków',
                         // max length allowed by database field
-                        'max' => 180
-                    ])
+                        'max' => 180,
+                    ]),
                 ],
             ])
         ;

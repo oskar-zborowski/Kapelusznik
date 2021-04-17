@@ -16,6 +16,7 @@
 !var/sessions/.gitkeep
 
 # Logs (Symfony4)
+/var
 /var/log/*
 !var/log/.gitkeep
 

@@ -15,8 +15,17 @@
             {{ form_row(registrationForm.name) }}
             {{ form_row(registrationForm.email) }}
             {{ form_row(registrationForm.plainPassword) }}
-            {{ form_row(registrationForm.3) }}
-            {{ form_row(registrationForm.2) }}
+            
+            {% for key in agr|keys %}
+                <div class="row">
+                    <div class="col">
+                        {{ form_row(registrationForm[key]) }}
+                    </div>
+                    <div class="col">
+                        <a href="agreement/{{ agr[key]['content'] }}">{{ agr[key]['name'] }}</a>
+                    </div>
+                </div>
+            {% endfor %}
 
             <button type="submit" class="btn btn-primary mt-3">Zarejestruj się</button>
         {{ form_end(registrationForm) }}
