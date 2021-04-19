@@ -3,9 +3,11 @@
 {% block title %}{{ parent() }}- Resetowanie hasła{% endblock %}
 
 {% block body %}
-    <p>
-        Na podany przez Ciebie adres e-mail została wysłana wiadomość z linkiem przenoszącym do panelu umożliwiającego zresetowanie hasła.<br>
-        Będzie on ważny przez {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
-    </p>
-    <p>Jeżeli nie otrzymałeś wiadomości zajrzyj do spamu lub <a href="{{ path('app_forgot_password_request') }}">spróbuj ponownie</a>.</p>
+    <div class="text-center p-4 main">
+        <p>
+            Na podany przez Ciebie adres e-mail została wysłana <b class="d-block">wiadomość z linkiem</b> przenoszącym do panelu umożliwiającego zresetowanie hasła.<br>
+            Będzie on ważny przez {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+        </p>
+        <p>Jeżeli nie otrzymałeś wiadomości mail zajrzyj do spamu lub <a href="{{ path('app_forgot_password_request') }}">spróbuj ponownie</a>.</p>
+    </div>
 {% endblock %}

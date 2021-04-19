@@ -67,7 +67,7 @@ class RegistrationFormType extends AbstractType
                         ]),
                         new Length([
                             'min' => 8,
-                            'minMessage' => 'Twoje hasło musi mieć conajmniej {{ limit }} znaków',
+                            'minMessage' => 'Twoje hasło musi mieć co najmniej {{ limit }} znaków',
                             'maxMessage' => 'Twoje hasło nie może przekraczać {{ limit }} znaków',
                             // max length allowed by Symfony for security reasons
                             'max' => 30,
