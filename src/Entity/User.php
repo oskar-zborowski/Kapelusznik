@@ -49,7 +49,7 @@ class User implements UserInterface
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=7)
+     * @ORM\Column(type="string", length=8)
      */
     private $profile_picture;
 

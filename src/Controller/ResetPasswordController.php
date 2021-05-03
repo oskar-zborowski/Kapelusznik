@@ -124,7 +124,7 @@ class ResetPasswordController extends AbstractController
             $userActivity = new UserActivity();
             $userActivity->setUser($user);
             $userActivity->setIpAddress($_SERVER['REMOTE_ADDR']);
-            $userActivity->setActivity('PASSWORD_CHANGE');
+            $userActivity->setActivity('PASSWORD_CHANGE_NOT_LOGGED_IN');
             $userActivity->setDate(new \DateTime());
 
             $entityManager->persist($userActivity);

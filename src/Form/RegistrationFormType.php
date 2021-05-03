@@ -2,10 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\Agreement;
 use App\Entity\User;
 use App\Service\AgreementService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -20,12 +18,10 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class RegistrationFormType extends AbstractType
 {
-    private $entityManager;
     private $agreementService;
 
-    public function __construct(EntityManagerInterface $entityManager, AgreementService $agreementService)
+    public function __construct(AgreementService $agreementService)
     {
-        $this->entityManager = $entityManager;
         $this->agreementService = $agreementService;
     }
 
@@ -56,7 +52,7 @@ class RegistrationFormType extends AbstractType
                         // max length allowed by database field
                         'max' => 180,
                     ])
-                ]
+                ],
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,

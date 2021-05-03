@@ -19,7 +19,7 @@ class AgreementService {
         else if ($only_is_required)
             $agreement = $this->entityManager->getRepository(Agreement::class)->findBy(['is_required' => 1], ['id' => 'DESC']);
         else
-            $agreement = $this->entityManager->getRepository(Agreement::class)->findAll(['id' => 'DESC']);
+            $agreement = $this->entityManager->getRepository(Agreement::class)->findBy([], ['id' => 'DESC']);
         
         $checked = array();
 

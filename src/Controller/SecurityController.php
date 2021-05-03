@@ -138,6 +138,8 @@ class SecurityController extends AbstractController
             $response = 0;
         }
 
+        // sleep(2); //TODO: docelowo usunąć
+
         return new Response($response);
     }
 }
