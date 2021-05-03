@@ -118,11 +118,17 @@ class User implements UserInterface
      */
     private $external_authentication;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Question::class, mappedBy="creator")
+     */
+    private $questions;
+
     public function __construct()
     {
         $this->userActivities = new ArrayCollection();
         $this->agreements = new ArrayCollection();
         $this->userAgreements = new ArrayCollection();
+        $this->questions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -448,6 +454,36 @@ class User implements UserInterface
     public function setExternalAuthentication(?string $external_authentication): self
     {
         $this->external_authentication = $external_authentication;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Question[]
+     */
+    public function getQuestions(): Collection
+    {
+        return $this->questions;
+    }
+
+    public function addQuestion(Question $question): self
+    {
+        if (!$this->questions->contains($question)) {
+            $this->questions[] = $question;
+            $question->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestion(Question $question): self
+    {
+        if ($this->questions->removeElement($question)) {
+            // set the owning side to null (unless already changed)
+            if ($question->getCreator() === $this) {
+                $question->setCreator(null);
+            }
+        }
 
         return $this;
     }

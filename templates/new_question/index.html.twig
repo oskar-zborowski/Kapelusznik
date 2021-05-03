@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - Tworzenie nowych pytań{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('warning') %}
+        <div class="alert alert-warning">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    <div class="container p-5 main">
+        <h1 class="h3 mb-3 mt-5 font-weight-normal text-center">Utwórz nowe pytanie</h1>
+
+        {% form_theme newQuestion 'bootstrap_4_layout.html.twig' %}
+        {{ form_start(newQuestion) }}
+            {{ form_row(newQuestion.content) }}
+            {{ form_row(newQuestion.category) }}
+            {{ form_row(newQuestion.gender) }}
+            {{ form_row(newQuestion.is_public) }}
+
+            <button type="submit" class="btn btn-primary mt-3">Dodaj</button>
+        {{ form_end(newQuestion) }}
+
+    </div>
+
+{% endblock %}
