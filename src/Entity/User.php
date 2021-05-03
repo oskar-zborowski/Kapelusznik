@@ -123,12 +123,18 @@ class User implements UserInterface
      */
     private $questions;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Room::class, mappedBy="host")
+     */
+    private $rooms;
+
     public function __construct()
     {
         $this->userActivities = new ArrayCollection();
         $this->agreements = new ArrayCollection();
         $this->userAgreements = new ArrayCollection();
         $this->questions = new ArrayCollection();
+        $this->rooms = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -482,6 +488,36 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($question->getCreator() === $this) {
                 $question->setCreator(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Room[]
+     */
+    public function getRooms(): Collection
+    {
+        return $this->rooms;
+    }
+
+    public function addRoom(Room $room): self
+    {
+        if (!$this->rooms->contains($room)) {
+            $this->rooms[] = $room;
+            $room->setHost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRoom(Room $room): self
+    {
+        if ($this->rooms->removeElement($room)) {
+            // set the owning side to null (unless already changed)
+            if ($room->getHost() === $this) {
+                $room->setHost(null);
             }
         }
 

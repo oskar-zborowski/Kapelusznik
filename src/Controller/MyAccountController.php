@@ -157,7 +157,6 @@ class MyAccountController extends AbstractController
 
             if ($profilePicture) {
                 try {
-                    $originalFilename = pathinfo($profilePicture->getClientOriginalName(), PATHINFO_FILENAME);
                     $filename = NULL;
 
                     do {
