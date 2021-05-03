@@ -44,6 +44,9 @@ Wojciech Mila - Frontend Developer
                     </li>
                     {% if app.user %}
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ path('new_question') }}">Dodaj pytania</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ path('my_account') }}">Moje konto</a>
                         </li>
                         <li class="nav-item">
