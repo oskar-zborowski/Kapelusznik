@@ -1,19 +1,13 @@
 body {
-    background-color: #212529;
-    /*background: url("../img/footer_lodyas.png");*/
-    /*background-color: #ccc;*/
-    /*height: 500px;*/
-    /*background-position: center;*/
-    /*background-repeat: no-repeat;*/
-    /*background-size: cover;*/
-    /*position: relative;*/
-
+    background-color: #061f39;
+    /*background-color: #390606;*/ /*maybe diffrent color versions*/
     color: white;
 }
 
 nav {
     position: sticky !important;
     top: 0px;
+    background-color: #061f39;
 }
 
 .navbar-brand > img {
@@ -22,12 +16,33 @@ nav {
 }
 
 .main {
-    /*background: rgba(255, 255, 255, 0.3);*/
     background: url("../img/footer_lodyas.png");
-    border-radius: 6px;
+    border-radius: 12px;
     padding: 10px;
 }
 
-input {
+.button {
+    border-radius: 10px;
+    padding: 8px;
+    margin: 4px;
+    text-align: center;
+    display: block;
+    background-color: #061f39;
+    text-decoration: none;
+    color: #fff;
+    border-width: 0px;
+}
+
+.button:hover {
+    background: rgba(6, 31, 57, 0.4);
+    color: #fff;
+    transition: 300ms;
+}
+
+form input, select {
     background-color: #ccc !important;
 }
+
+/*.formInlineContainer > div {
+    display: inline-block;
+}*/

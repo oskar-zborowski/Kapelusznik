@@ -30,15 +30,15 @@
 
             <div class="checkbox mb-3">
                 <label>
-                    <input type="checkbox" name="_remember_me"> Zapamiętaj mnie
+                    <input type="checkbox" name="_remember_me" class="form-check-input bg-dark"> Zapamiętaj mnie
                 </label>
             </div>
            
-            <button class="btn btn-primary mt-3" type="submit">
+            <button class="{#btn btn-primary mt-3#} button" type="submit">
                 Zaloguj się
             </button>
         </form>
 
-        <a href="{{ path('app_forgot_password_request') }}">Nie pamiętam hasła</a>
+        <a href="{{ path('app_forgot_password_request') }}" class="text-white">Nie pamiętam hasła</a>
     </div>
 {% endblock %}
