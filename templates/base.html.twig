@@ -12,7 +12,7 @@ Wojciech Mila - Frontend Developer
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    {# <link rel="Shortcut icon" href="{{ asset('assets/img/') }}"> #}
+    <link rel="Shortcut icon" href="{{ asset('assets/img/top-hat.png') }}">
     <title>{% block title %}Kapelusznik{% endblock %}</title>
     {# Run `composer require symfony/webpack-encore-bundle`
         and uncomment the following Encore helpers to start using Symfony UX #}
@@ -44,7 +44,7 @@ Wojciech Mila - Frontend Developer
                     </li>
                     {% if app.user %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('settings') }}">Ustawienia</a>
+                            <a class="nav-link" href="{{ path('my_account') }}">Moje konto</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_logout') }}">Wyloguj się</a>

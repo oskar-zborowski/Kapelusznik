@@ -71,14 +71,15 @@ class BasicUserDataType extends AbstractType
             ])
             ->add('date_of_birth', BirthdayType::class, [
                 'label' => 'Data urodzenia',
+                'widget' => 'single_text',
                 'data' => $dateOfBirth,
                 'required' => false,
             ])
             ->add('gender', ChoiceType::class, [
                 'label' => 'Płeć',
                 'data' => $gender,
-                'required' => false,
                 'choices' => [
+                    '-- wybierz --' => NULL,
                     'Mężczyzna' => 'm',
                     'Kobieta' => 'f',
                 ],
@@ -92,6 +93,7 @@ class BasicUserDataType extends AbstractType
                         'mimeTypes' => [
                             'image/*',
                         ],
+                        'maxSizeMessage' => 'Rozmiar zdjęcia nie może przekraczać 2MB!',
                         'mimeTypesMessage' => 'Obsługiwany format pliku musi być obrazem',
                     ])
                 ],
