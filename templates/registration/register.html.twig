@@ -17,18 +17,38 @@
             {{ form_row(registrationForm.plainPassword) }}
             
             {% for key in agr|keys %}
-                <div class="row">
-                    <div class="col">
-                        {{ form_row(registrationForm[key]) }}
-                    </div>
-                    <div class="col">
-                        <a href="agreement/{{ agr[key]['content'] }}">{{ agr[key]['name'] }}</a>
-                    </div>
+{#                <div class="my-1 formInlineContainer">#}
+{#                    <div>#}
+{#                        {{ form_row(registrationForm[key], {#}
+{#                        }) }}#}
+{#                    </div>#}
+{#                    <div>#}
+{#                        <label for="{{ registrationForm[key].vars.id }}"><a href="agreement/{{ agr[key]['content'] }}" class="text-white">{{ agr[key]['name'] }}</a></label>#}
+{#                    </div>#}
+{#                </div>#}
+
+                <div class="my-1">
+                    {% set regLink %}{{ agr[key]['content'] }}">{{ agr[key]['name'] }}{% endset %}
+                    {{ form_row(registrationForm[key], {
+                        'label': regLink,
+                        'label_attr': {'class': 'regLink invisible'},
+                        'attr': {'class': 'bg-dark'}
+                    }) }}
                 </div>
             {% endfor %}
 
-            <button type="submit" class="btn btn-primary mt-3">Zarejestruj się</button>
+            <button type="submit" class="{#btn btn-primary mt-3#} button">Zarejestruj się</button>
         {{ form_end(registrationForm) }}
     </div>
 
 {% endblock %}
+{#
+<div class="row">
+    <div class="col">
+        {{ form_row(registrationForm[key]) }}
+    </div>
+    <div class="col">
+        <a href="agreement/{{ agr[key]['content'] }}" class="text-white">{{ agr[key]['name'] }}</a>
+    </div>
+</div>
+#}

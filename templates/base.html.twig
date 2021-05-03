@@ -24,7 +24,7 @@ Wojciech Mila - Frontend Developer
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ path('index') }}">
                 <img class="" src="{{ asset('assets/img/hatIcon.png') }}">Kapelusznik
@@ -44,7 +44,7 @@ Wojciech Mila - Frontend Developer
                     </li>
                     {% if app.user %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_logout') }}">Ustawienia</a>
+                            <a class="nav-link" href="{{ path('settings') }}">Ustawienia</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_logout') }}">Wyloguj się</a>
@@ -74,6 +74,7 @@ Wojciech Mila - Frontend Developer
         <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('assets/js/ajax.js') }}"></script>
         <script src="{{ asset('assets/js/exit.js') }}"></script>
+        <script src="{{ asset('assets/js/main.js') }}"></script>
     {% endblock %}
 </body>
 </html>

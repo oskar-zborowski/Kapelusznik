@@ -4,9 +4,18 @@
 
 {% block body %}
     <div class="container p-5 main">
-        <form method="post">
-            <button class="btn btn-primary mt-3" type="submit">
-                Zapisz zmiany
-            </button>
+        {% form_theme settingsForm 'bootstrap_4_layout.html.twig' %}
+            {{ form_start(settingsForm) }}
+            <button type="submit" class="button">Zapisz zmiany</button>
+
+            {{ form_row(settingsForm.name) }}
+            {{ form_row(settingsForm.profile_picture, {'attr': {'class': 'text-dark w-100'} }) }}
+{#            color#}
+            {{ form_row(settingsForm.email) }}
+            {{ form_row(settingsForm.date_of_birth) }}
+            {{ form_row(settingsForm.gender) }}
+
+
+        {{ form_end(settingsForm) }}
     </div>
 {% endblock %}
