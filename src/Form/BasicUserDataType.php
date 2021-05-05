@@ -97,6 +97,9 @@ class BasicUserDataType extends AbstractType
                         'mimeTypesMessage' => 'Obsługiwany format pliku musi być obrazem',
                     ])
                 ],
+                'attr' => [
+                    'onchange' => 'previewFile()'
+                ],
             ])
             ->add('email', EmailType::class, [
                 'label' => 'E-mail',

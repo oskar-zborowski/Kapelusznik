@@ -20,7 +20,12 @@
         {% form_theme basicUserDataForm 'bootstrap_4_layout.html.twig' %}
         {{ form_start(basicUserDataForm) }}
             {{ form_row(basicUserDataForm.name) }}
-            {{ form_row(basicUserDataForm.profile_picture, {'attr': {'class': 'text-dark w-100'} }) }}
+            {{ form_row(basicUserDataForm.profile_picture, {
+                'attr': {
+                    'class': 'text-dark w-100'
+                }
+            }) }}
+            <img src="{{ asset('images/'~app.user.profilePicture) }}" id="avatar" class="mw-100 mt-3" height="200">
             {{ form_row(basicUserDataForm.date_of_birth) }}
             {{ form_row(basicUserDataForm.gender) }}
             {{ form_row(basicUserDataForm.email) }}
@@ -28,17 +33,17 @@
             {{ form_row(basicUserDataForm.active_login_form) }}
 
             {% for key in agr|keys %}
-                <div class="row">
-                    <div class="col">
-                        {{ form_row(basicUserDataForm[key]) }}
-                    </div>
-                    <div class="col">
-                        <a href="agreement/{{ agr[key]['content'] }}">{{ agr[key]['name'] }}</a>
-                    </div>
+                <div class="my-1">
+                    {% set regLink %}{{ agr[key]['content'] }}">{{ agr[key]['name'] }}{% endset %}
+                    {{ form_row(basicUserDataForm[key], {
+                        'label': regLink,
+                        'label_attr': {'class': 'regLink invisible'},
+                        'attr': {'class': 'bg-dark'}
+                    }) }}
                 </div>
             {% endfor %}
 
-            <button type="submit" class="btn btn-primary mt-3">Zapisz</button>
+            <button type="submit" class="button">Zapisz</button>
         {{ form_end(basicUserDataForm) }}
 
         <br><br>
@@ -47,12 +52,12 @@
         {{ form_start(resetForm) }}
             {{ form_row(resetForm.plainPassword) }}
 
-            <button class="btn btn-primary mt-3">Zapisz</button>
+            <button class="button">Zapisz</button>
         {{ form_end(resetForm) }}
 
         <br><br>
 
-        <a href="/my_account?deleteAccount">Usuń konto</a>
+        <a href="/my_account?deleteAccount" class="text-white">Usuń konto</a>
     </div>
 
 {% endblock %}
