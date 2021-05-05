@@ -157,7 +157,6 @@ class MyAccountController extends AbstractController
 
             if ($profilePicture) {
                 try {
-                    $originalFilename = pathinfo($profilePicture->getClientOriginalName(), PATHINFO_FILENAME);
                     $filename = NULL;
 
                     do {
@@ -238,13 +237,10 @@ class MyAccountController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $lastPicture = $user->getProfilePicture();
-
         return $this->render('my_account/index.html.twig', [
             'basicUserDataForm' => $form->createView(),
             'resetForm' => $form2->createView(),
             'agr' => $agr,
-            'profile_picture' => $lastPicture,
             'email_error' => $emailError,
         ]);
     }
