@@ -59,5 +59,6 @@ form input, select {
 #avatar {
     max-height: 140px;
     max-width: 100%;
-    float: right;
+    display: block;
+    margin: 0 auto;
 }
