@@ -55,3 +55,9 @@ form input, select {
 /*.formInlineContainer > div {
     display: inline-block;
 }*/
+
+#avatar {
+    max-height: 140px;
+    max-width: 100%;
+    float: right;
+}

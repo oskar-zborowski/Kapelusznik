@@ -20,12 +20,19 @@
         {% form_theme basicUserDataForm 'bootstrap_4_layout.html.twig' %}
         {{ form_start(basicUserDataForm) }}
             {{ form_row(basicUserDataForm.name) }}
-            {{ form_row(basicUserDataForm.profile_picture, {
-                'attr': {
-                    'class': 'text-dark w-100'
-                }
-            }) }}
-            <img src="{{ asset('images/'~app.user.profilePicture) }}" id="avatar" class="mw-100 mt-3" height="200">
+            <div class="row">
+                <div class="col-6">
+                    {{ form_row(basicUserDataForm.profile_picture, {
+                        'attr': {
+                            'class': 'text-dark w-100 align-middle test'
+                        }
+                    }) }}
+                </div>
+                <div class="col-6">
+                    <img src="{{ asset('images/'~app.user.profilePicture) }}" id="avatar" class="rounded-circle" height="200">
+                </div>
+            </div>
+
             {{ form_row(basicUserDataForm.date_of_birth) }}
             {{ form_row(basicUserDataForm.gender) }}
             {{ form_row(basicUserDataForm.email) }}

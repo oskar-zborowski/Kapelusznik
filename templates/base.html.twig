@@ -24,12 +24,23 @@ Wojciech Mila - Frontend Developer
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-xl navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ path('index') }}">
                 <img src="{{ asset('assets/img/hatIcon.png') }}">
                 <span class="{% if app.user %}d-none{% endif %} d-md-inline">Kapelusznik</span>
             </a>
+
+            {% if app.user %}
+                <div class="mx-sm-5">
+                    <img src="{{ asset('images/'~app.user.profilePicture) }}" height="70" class="rounded-circle">
+                    <span class="mx-1">{{ app.user.name }}</span>
+                </div>
+            {% endif %}
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
             <div class="collapse navbar-collapse" id="navbarToggle">
                 <ul class="navbar-nav mr-auto">
@@ -62,17 +73,6 @@ Wojciech Mila - Frontend Developer
                     {% endif %}
                 </ul>
             </div>
-
-            {% if app.user %}
-                <div class="m-3">
-                    <img src="{{ asset('images/'~app.user.profilePicture) }}" height="70">
-                    <span class="">{{ app.user.name }}</span>
-                </div>
-            {% endif %}
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
 
         </div>
     </nav>
