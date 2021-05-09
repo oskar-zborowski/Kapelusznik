@@ -25,9 +25,22 @@
         {% form_theme newRoom 'bootstrap_4_layout.html.twig' %}
         {{ form_start(newRoom) }}
             {{ form_row(newRoom.name) }}
-            {{ form_row(newRoom.logo_filename) }}
 
-            <button type="submit" class="btn btn-primary mt-3">Stwórz</button>
+            <div class="row">
+                <div class=" col-sm-6">
+                    {{ form_row(newRoom.logo_filename, {
+                        'attr': {
+                            'class': 'text-dark w-100'
+                        },
+                        'label_attr' : {'class' : 'mt-sm-4'}
+                    }) }}
+                </div>
+                <div class="col-sm-6">
+                    <img src="" class="rounded-circle avatar" height="200">
+                </div>
+            </div>
+
+            <button type="submit" class="button">Stwórz</button>
         {{ form_end(newRoom) }}
 
     </div>

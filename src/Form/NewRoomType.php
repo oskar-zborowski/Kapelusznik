@@ -43,6 +43,9 @@ class NewRoomType extends AbstractType
                         'mimeTypesMessage' => 'Obsługiwany format pliku musi być obrazem',
                     ])
                 ],
+                'attr' => [
+                    'onchange' => 'previewFile()'
+                ],
             ])
         ;
     }

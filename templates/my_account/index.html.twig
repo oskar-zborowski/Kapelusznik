@@ -21,15 +21,16 @@
         {{ form_start(basicUserDataForm) }}
             {{ form_row(basicUserDataForm.name) }}
             <div class="row">
-                <div class="col-6">
+                <div class=" col-sm-6">
                     {{ form_row(basicUserDataForm.profile_picture, {
                         'attr': {
-                            'class': 'text-dark w-100 align-middle test'
-                        }
+                            'class': 'text-dark w-100'
+                        },
+                        'label_attr' : {'class' : 'mt-sm-4'}
                     }) }}
                 </div>
-                <div class="col-6">
-                    <img src="{{ asset('images/'~app.user.profilePicture) }}" id="avatar" class="rounded-circle" height="200">
+                <div class="col-sm-6">
+                    <img src="{{ asset('images/'~app.user.profilePicture) }}" class="avatar rounded-circle" height="200">
                 </div>
             </div>
 

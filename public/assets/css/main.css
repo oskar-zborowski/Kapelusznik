@@ -36,6 +36,7 @@ nav {
     text-decoration: none;
     color: #fff;
     border-width: 0px;
+    margin-top: 20px;
 }
 
 .button:hover {
@@ -56,7 +57,7 @@ form input, select {
     display: inline-block;
 }*/
 
-#avatar {
+.avatar {
     max-height: 140px;
     max-width: 100%;
     display: block;
