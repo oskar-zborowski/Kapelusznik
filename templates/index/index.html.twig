@@ -9,14 +9,36 @@
 </style>
 
 <div class="example-wrapper main">
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('warning') %}
+        <div class="alert alert-warning">
+            {{ message }}
+        </div>
+    {% endfor %}
+
     {% if app.user %}
         <p>Jesteś zalogowany jako:</p>
         <h2>{{ app.user.name }}</h2>
+
+        {% form_theme newRoomConnection 'bootstrap_4_layout.html.twig' %}
+        {{ form_start(newRoomConnection) }}
+            {{ form_row(newRoomConnection.code, { 'label': 'Kod gry' }) }}
+
+            <button type="submit" class="button">Dołącz</button>
+        {{ form_end(newRoomConnection) }}
     {% else %}
         <p class="text-center">Kapelusznik to niezwykła gra, w której uczestnicy stają przed najróżniejszymi pytaniami. W ramach odpowiedzi każdy anonimowo głosuje na 1 z uczestników, po czym odpowiedzi wrzucane są do wirtualnego kapelusza. Potem następuje prezentacja wyników głosowania. Gra pozwala na lepsze poznanie Twoich znajomych, poprzez świetną zabawę.</p>
+        <a href="{{ path('room') }}" class="button">Zagraj teraz!</a>
     {% endif %}
-
-    <a href="{{ path('room') }}" class="button">Zagraj teraz!</a>
 
 </div>
 {% endblock %}

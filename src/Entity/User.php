@@ -128,6 +128,11 @@ class User implements UserInterface
      */
     private $rooms;
 
+    /**
+     * @ORM\OneToMany(targetEntity=RoomConnection::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $roomConnections;
+
     public function __construct()
     {
         $this->userActivities = new ArrayCollection();
@@ -135,6 +140,7 @@ class User implements UserInterface
         $this->userAgreements = new ArrayCollection();
         $this->questions = new ArrayCollection();
         $this->rooms = new ArrayCollection();
+        $this->roomConnections = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -518,6 +524,36 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($room->getHost() === $this) {
                 $room->setHost(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RoomConnection[]
+     */
+    public function getRoomConnections(): Collection
+    {
+        return $this->roomConnections;
+    }
+
+    public function addRoomConnection(RoomConnection $roomConnection): self
+    {
+        if (!$this->roomConnections->contains($roomConnection)) {
+            $this->roomConnections[] = $roomConnection;
+            $roomConnection->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRoomConnection(RoomConnection $roomConnection): self
+    {
+        if ($this->roomConnections->removeElement($roomConnection)) {
+            // set the owning side to null (unless already changed)
+            if ($roomConnection->getUser() === $this) {
+                $roomConnection->setUser(null);
             }
         }
 

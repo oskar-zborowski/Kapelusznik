@@ -3,19 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\Room;
+use App\Entity\RoomConnection;
 use App\Entity\User;
 use App\Form\NewRoomType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class NewRoomController extends AbstractController
 {
     /**
      * @Route("/new_room", name="new_room")
      */
-    public function index(Request $request): Response
+    public function index(Request $request, SessionInterface $session): Response
     {
         if (!$this->getUser())
             return $this->redirectToRoute('index');
@@ -27,11 +29,23 @@ class NewRoomController extends AbstractController
 
         $entityManager = $this->getDoctrine()->getManager();
 
-        $checkNumberOfRoom = $entityManager->getRepository(Room::class)->findBy(['host' => $this->getUser(), 'status' => 'o']);
-        $checkNumberOfRoom2 = $entityManager->getRepository(Room::class)->findBy(['host' => $this->getUser(), 'status' => 'b']);
-        $checkNumberOfRoom3 = $entityManager->getRepository(Room::class)->findBy(['host' => $this->getUser(), 'status' => 'c']);
+        $checkNumberOfRoom = $entityManager->getRepository(Room::class)->findOneBy(['host' => $this->getUser(), 'status' => 'o']);
+        $checkNumberOfRoom2 = $entityManager->getRepository(Room::class)->findOneBy(['host' => $this->getUser(), 'status' => 'b']);
+        $checkNumberOfRoom3 = $entityManager->getRepository(Room::class)->findOneBy(['host' => $this->getUser(), 'status' => 'c']);
 
-        if (count($checkNumberOfRoom) >= 1 || count($checkNumberOfRoom2) >= 1 || count($checkNumberOfRoom3) >= 1) {
+        if ($checkNumberOfRoom || $checkNumberOfRoom2 || $checkNumberOfRoom3) {
+            $room = null;
+
+            if ($checkNumberOfRoom) {
+                $room = $checkNumberOfRoom->getId();
+            } else if ($checkNumberOfRoom2) {
+                $room = $checkNumberOfRoom2->getId();
+            } else if ($checkNumberOfRoom3) {
+                $room = $checkNumberOfRoom3->getId();
+            }
+
+            $session->set('activeRoom', $room);
+
             return $this->redirectToRoute('room');
         }
 
@@ -98,6 +112,24 @@ class NewRoomController extends AbstractController
                 $entityManager->persist($newRoom);
                 $entityManager->flush();
             }
+
+            $roomExit = $entityManager->getRepository(RoomConnection::class)->findOneBy(['user' => $this->getUser()]);
+
+            if ($roomExit) {
+                $entityManager->remove($roomExit);
+                $entityManager->flush();
+                $session->remove('activeRoom');
+            }
+
+            $roomConnection = new RoomConnection();
+            $roomConnection->setRoom($newRoom);
+            $roomConnection->setUser($this->getUser());
+            $roomConnection->setIsAccepted(1);
+
+            $entityManager->persist($roomConnection);
+            $entityManager->flush();
+
+            $session->set('activeRoom', $newRoom->getId());
 
             return $this->redirectToRoute('room');
         }

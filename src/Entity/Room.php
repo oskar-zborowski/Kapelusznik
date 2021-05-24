@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RoomRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -42,6 +44,16 @@ class Room
      * @ORM\Column(type="string", length=1)
      */
     private $status;
+
+    /**
+     * @ORM\OneToMany(targetEntity=RoomConnection::class, mappedBy="room", orphanRemoval=true)
+     */
+    private $roomConnections;
+
+    public function __construct()
+    {
+        $this->roomConnections = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -104,6 +116,36 @@ class Room
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RoomConnection[]
+     */
+    public function getRoomConnections(): Collection
+    {
+        return $this->roomConnections;
+    }
+
+    public function addRoomConnection(RoomConnection $roomConnection): self
+    {
+        if (!$this->roomConnections->contains($roomConnection)) {
+            $this->roomConnections[] = $roomConnection;
+            $roomConnection->setRoom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRoomConnection(RoomConnection $roomConnection): self
+    {
+        if ($this->roomConnections->removeElement($roomConnection)) {
+            // set the owning side to null (unless already changed)
+            if ($roomConnection->getRoom() === $this) {
+                $roomConnection->setRoom(null);
+            }
+        }
 
         return $this;
     }
