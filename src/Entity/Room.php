@@ -50,9 +50,25 @@ class Room
      */
     private $roomConnections;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $current_question_number;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $number_of_questions;
+
+    /**
+     * @ORM\OneToMany(targetEntity=RoomQuestion::class, mappedBy="room", orphanRemoval=true)
+     */
+    private $roomQuestions;
+
     public function __construct()
     {
         $this->roomConnections = new ArrayCollection();
+        $this->roomQuestions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -144,6 +160,60 @@ class Room
             // set the owning side to null (unless already changed)
             if ($roomConnection->getRoom() === $this) {
                 $roomConnection->setRoom(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCurrentQuestionNumber(): ?int
+    {
+        return $this->current_question_number;
+    }
+
+    public function setCurrentQuestionNumber(?int $current_question_number): self
+    {
+        $this->current_question_number = $current_question_number;
+
+        return $this;
+    }
+
+    public function getNumberOfQuestions(): ?int
+    {
+        return $this->number_of_questions;
+    }
+
+    public function setNumberOfQuestions(?int $number_of_questions): self
+    {
+        $this->number_of_questions = $number_of_questions;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RoomQuestion[]
+     */
+    public function getRoomQuestions(): Collection
+    {
+        return $this->roomQuestions;
+    }
+
+    public function addRoomQuestion(RoomQuestion $roomQuestion): self
+    {
+        if (!$this->roomQuestions->contains($roomQuestion)) {
+            $this->roomQuestions[] = $roomQuestion;
+            $roomQuestion->setRoom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRoomQuestion(RoomQuestion $roomQuestion): self
+    {
+        if ($this->roomQuestions->removeElement($roomQuestion)) {
+            // set the owning side to null (unless already changed)
+            if ($roomQuestion->getRoom() === $this) {
+                $roomQuestion->setRoom(null);
             }
         }
 

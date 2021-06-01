@@ -21,11 +21,29 @@
     
     <div class="container p-5 main">
         <h1 class="h3 mb-3 mt-5 font-weight-normal text-center">Pokój</h1>
+        <p>KOD: {{ code }}</p>
         <p>Lista osób w pokoju:</p>
-        <div id="userList">
-            {% for player in players %}
-                <li>{{ player }}</li>
-            {% endfor %}
+        <div>
+            <ul id="userList">
+                {% for player in players %}
+                    {% if player.admin %}
+                        <li>{{ player.name }}</li>
+                    {% else %}
+                        <li>{{ player.name }} <a href="/room?deleteUser={{ player.id }}">Wyrzuć</a> </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <br>
+
+        <p>Lista pytań:</p>
+        <div>
+            <ol id="questionList">
+                {% for question in questions %}
+                    <li>{{ question.content }} <a href="/room?deleteQuestion={{ question.id }}">Usuń</a> </li>
+                {% endfor %}
+            </ol>
         </div>
 
         <br>
@@ -37,9 +55,19 @@
 
                 <button type="submit" class="button">Dodaj</button>
             {{ form_end(newRoomConnection) }}
+
+            {% form_theme addRoomQuestion 'bootstrap_4_layout.html.twig' %}
+            {{ form_start(addRoomQuestion) }}
+                {{ form_row(addRoomQuestion.question) }}
+
+                <button type="submit" class="button">Dodaj</button>
+            {{ form_end(addRoomQuestion) }}
         {% endif %}
 
     <a href="/room?leaveRoom" class="text-white">Opuść pokój</a>
+    {% if isAdmin %}
+        <br><a href="/room?closeRoom" class="text-white">Zamknij pokój</a>
+    {% endif %}
 
     </div>
 
@@ -48,4 +76,5 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('assets/js/getUserList.js') }}"></script>
+    <script src="{{ asset('assets/js/getQuestionList.js') }}"></script>
 {% endblock %}

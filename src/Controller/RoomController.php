@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Question;
 use App\Entity\Room;
 use App\Entity\RoomConnection;
+use App\Entity\RoomQuestion;
 use App\Entity\User;
+use App\Form\AddQuestionType;
 use App\Form\InviteUserType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,12 +25,23 @@ class RoomController extends AbstractController
         if (!$this->getUser())
             return $this->redirectToRoute('app_login');
 
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $roomActual = $entityManager->getRepository(RoomConnection::class)->findOneBy(['user' => $this->getUser()]);
+
+        if ($roomActual) {
+            $session->set('activeRoom', $roomActual->getRoom()->getId());
+        }
+
         $newRoomConnection = new RoomConnection();
 
         $form = $this->createForm(InviteUserType::class, $newRoomConnection);
         $form->handleRequest($request);
 
-        $entityManager = $this->getDoctrine()->getManager();
+        $addRoomQuestion = new RoomQuestion();
+
+        $form2 = $this->createForm(AddQuestionType::class, $addRoomQuestion);
+        $form2->handleRequest($request);
 
         $roomNumber = $session->get('activeRoom');
 
@@ -40,6 +54,53 @@ class RoomController extends AbstractController
                 $entityManager->remove($roomExit);
                 $entityManager->flush();
                 $session->remove('activeRoom');
+            }
+        }
+
+        if (isset($_GET['closeRoom'])) {
+            $roomClose = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $this->getUser()]);
+
+            if ($roomClose) {
+                $roomExit = $entityManager->getRepository(RoomConnection::class)->findBy(['room' => $roomClose]);
+
+                foreach ($roomExit as $r) {
+                    $entityManager->remove($r);
+                    $entityManager->flush();
+                }
+
+                $roomClose->setStatus('r');
+                $entityManager->persist($roomClose);
+                $entityManager->flush();
+
+                $session->remove('activeRoom');
+            }
+        }
+
+        if (isset($_GET['deleteQuestion'])) {
+            $roomClose = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $this->getUser()]);
+
+            if ($roomClose) {
+                $question = $entityManager->getRepository(Question::class)->findOneBy(['id' => $_GET['deleteQuestion']]);
+                $deleteQuestion = $entityManager->getRepository(RoomQuestion::class)->findOneBy(['room' => $roomClose, 'question' => $question]);
+
+                if ($deleteQuestion) {
+                    $entityManager->remove($deleteQuestion);
+                    $entityManager->flush();
+                }
+            }
+        }
+
+        if (isset($_GET['deleteUser'])) {
+            $roomClose = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $this->getUser()]);
+
+            if ($roomClose) {
+                $user = $entityManager->getRepository(User::class)->findOneBy(['id' => $_GET['deleteUser']]);
+                $deleteUser = $entityManager->getRepository(RoomConnection::class)->findOneBy(['room' => $roomClose, 'user' => $user]);
+
+                if ($deleteUser) {
+                    $entityManager->remove($deleteUser);
+                    $entityManager->flush();
+                }
             }
         }
     
@@ -56,6 +117,7 @@ class RoomController extends AbstractController
         }
 
         $admin = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $this->getUser()]);
+        $codeNumber = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber]);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $userVerification = $entityManager->getRepository(User::class)->findOneBy(['code' => $form->get('code')->getData()]);
@@ -76,6 +138,31 @@ class RoomController extends AbstractController
             }
         }
 
+        if ($form2->isSubmitted() && $form2->isValid()) {
+            if ($admin) {
+                $question = $entityManager->getRepository(Question::class)->findOneBy(['id' => $form2->get('question')->getData()]);
+                $questionNumbers = $entityManager->getRepository(RoomQuestion::class)->findBy(['room' => $codeNumber]);
+                $questionValidate = $entityManager->getRepository(RoomQuestion::class)->findOneBy(['room' => $codeNumber, 'question' => $question]);
+
+                if (!$questionValidate) {
+                    $counter = 1;
+
+                    foreach ($questionNumbers as $qn) {
+                        $counter++;
+                    }
+    
+                    $addRoomQuestion->setRoom($codeNumber);
+                    $addRoomQuestion->setQuestion($question);
+                    $addRoomQuestion->setQuestionNumber($counter);
+    
+                    $entityManager->persist($addRoomQuestion);
+                    $entityManager->flush();
+                } else {
+                    $this->addFlash('warning', 'Wybrane pytanie jest już dodane');
+                }
+            }
+        }
+
         $roomPlayers = $entityManager->getRepository(RoomConnection::class)->findBy(['room' => $roomNumber]);
         $players = null;
 
@@ -83,9 +170,27 @@ class RoomController extends AbstractController
             $isAdmin = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $rp->getUser()]);
 
             if ($isAdmin)
-                $players[] = $rp->getUser()->getName() . ' (ADMIN)';
+                $players[] = [
+                    'name' => $rp->getUser()->getName() . ' (ADMIN)',
+                    'id' => $rp->getUser()->getId(),
+                    'admin' => true
+                ];
             else
-                $players[] = $rp->getUser()->getName();
+                $players[] = [
+                    'name' => $rp->getUser()->getName(),
+                    'id' => $rp->getUser()->getId(),
+                    'admin' => false
+                ];
+        }
+
+        $questionList = $entityManager->getRepository(RoomQuestion::class)->findBy(['room' => $roomNumber]);
+        $questions = null;
+
+        foreach ($questionList as $q) {
+            $questions[] = [
+                'content' => $q->getQuestion()->getContent(),
+                'id' => $q->getQuestion()->getId()
+            ];
         }
 
         unset($newRoomConnection);
@@ -94,10 +199,19 @@ class RoomController extends AbstractController
         $newRoomConnection = new RoomConnection();
         $form = $this->createForm(InviteUserType::class, $newRoomConnection);
 
+        unset($addRoomQuestion);
+        unset($form2);
+
+        $addRoomQuestion = new RoomQuestion();
+        $form2 = $this->createForm(AddQuestionType::class, $addRoomQuestion);
+
         return $this->render('room/index.html.twig', [
             'players' => $players,
+            'questions' => $questions,
             'newRoomConnection' => $form->createView(),
+            'addRoomQuestion' => $form2->createView(),
             'isAdmin' => $admin,
+            'code' => $codeNumber->getCode(),
         ]);
     }
 
@@ -111,19 +225,73 @@ class RoomController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
 
         $roomNumber = $session->get('activeRoom');
+        $room = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber]);
 
-        $roomPlayers = $entityManager->getRepository(RoomConnection::class)->findBy(['room' => $roomNumber]);
+        $roomPlayers = $entityManager->getRepository(RoomConnection::class)->findBy(['room' => $room]);
         $players = null;
 
         foreach ($roomPlayers as $rp) {
             $isAdmin = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $rp->getUser()]);
 
             if ($isAdmin)
-                $players[] = $rp->getUser()->getName() . ' (ADMIN)';
+                $players[] = [
+                    'name' => $rp->getUser()->getName() . ' (ADMIN)',
+                    'id' => $rp->getUser()->getId(),
+                    'admin' => true
+                ];
             else
-                $players[] = $rp->getUser()->getName();
+                $players[] = [
+                    'name' => $rp->getUser()->getName(),
+                    'id' => $rp->getUser()->getId(),
+                    'admin' => false
+                ];
         }
 
         return new Response(json_encode($players));
+    }
+
+    /**
+     * @Route("/questionList", name="questionList")
+     */
+    public function questionList(SessionInterface $session)
+    {
+        sleep(1);
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $roomNumber = $session->get('activeRoom');
+        $room = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber]);
+
+        $roomQuestions = $entityManager->getRepository(RoomQuestion::class)->findBy(['room' => $room]);
+        $questions = null;
+
+        foreach ($roomQuestions as $rq) {
+            $questions[] = [
+                'content' => $rq->getQuestion()->getContent(),
+                'id' => $rq->getQuestion()->getId()
+            ];
+        }
+
+        return new Response(json_encode($questions));
+    }
+
+    /**
+     * @Route("/getMe", name="getMe")
+     */
+    public function getMe(SessionInterface $session)
+    {
+        sleep(1);
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $roomNumber = $session->get('activeRoom');
+        $room = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber]);
+
+        $roomQuestions = $entityManager->getRepository(RoomConnection::class)->findOneBy(['room' => $room, 'user' => $this->getUser()]);
+        
+        if ($roomQuestions)
+            return new Response(1);
+        else
+            return new Response(0);
     }
 }

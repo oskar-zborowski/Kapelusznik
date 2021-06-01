@@ -33,6 +33,7 @@ class NewQuestionController extends AbstractController
                 $this->addFlash('warning', 'Osiągnięto maksymalną liczbę dodanych pytań');
             } else {
                 $newQuestion->setCreator($this->getUser());
+                $newQuestion->setGender('a');
                 $newQuestion->setIsVerified(0);
                 $newQuestion->setDateAdded(new \DateTime());
     

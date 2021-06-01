@@ -9,13 +9,32 @@ const getUserList = async () =>
 
     let input = '';
 
-    list.forEach(person => {
-        input = input + '<li>' + person + '</li>'
-    });
+    if (list != null) {
+        list.forEach(person => {
+            if (person.admin)
+                input = input + '<li>' + person.name + '</li>';
+            else
+                input = input + '<li>' + person.name + ' <a href="room?deleteUser=' + person.id + '">Wyrzuć</a>' + '</li>';
+        });
 
-    listDiv.innerHTML = input;
+        listDiv.innerHTML = input;
+    } else {
+        listDiv.innerHTML = '';
+    }
 
     getUserList();
 }
 
+const getMe = async () =>
+{
+    getListResponse = await sendRequest('GET', '/getMe');
+
+    if (getListResponse == 0) {
+        location.reload();
+    }
+
+    getMe();
+}
+
 getUserList();
+getMe();

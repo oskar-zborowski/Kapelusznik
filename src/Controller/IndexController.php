@@ -27,7 +27,7 @@ class IndexController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $roomVerification = $entityManager->getRepository(Room::class)->findOneBy(['code' => $form->get('code')->getData()]);
+                $roomVerification = $entityManager->getRepository(Room::class)->findOneBy(['code' => $form->get('code')->getData(), 'status' => 'o']);
                 $roomVerification2 = $entityManager->getRepository(RoomConnection::class)->findOneBy(['room' => $roomVerification, 'user' => $this->getUser()]);
     
                 if ($roomVerification && !$roomVerification2) {
@@ -53,7 +53,7 @@ class IndexController extends AbstractController
 
                 } else {
                     if (!$roomVerification) {
-                        $this->addFlash('warning', 'Podany kod jest niepoprawny!');
+                        $this->addFlash('warning', 'Podany kod jest niepoprawny lub pokój został zamknięty!');
                     } else {
                         $session->set('activeRoom', $roomVerification->getId());
                         return $this->redirectToRoute('room');

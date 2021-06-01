@@ -40,15 +40,6 @@ class NewQuestionType extends AbstractType
                     '18+ - kontekst erotyczny' => '18',
                 ],
             ])
-            ->add('gender', ChoiceType::class, [
-                'label' => 'Płeć',
-                'data' => 'a',
-                'choices' => [
-                    'Wszyscy' => 'a',
-                    'Mężczyzna' => 'm',
-                    'Kobieta' => 'f',
-                ],
-            ])
             ->add('is_public', ChoiceType::class, [
                 'label' => 'Czy pytanie ma zostać upublicznione?',
                 'data' => 1,

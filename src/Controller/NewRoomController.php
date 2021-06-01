@@ -36,15 +36,36 @@ class NewRoomController extends AbstractController
         if ($checkNumberOfRoom || $checkNumberOfRoom2 || $checkNumberOfRoom3) {
             $room = null;
 
+            $roomValid = null;
+
             if ($checkNumberOfRoom) {
                 $room = $checkNumberOfRoom->getId();
+                $roomValid = $checkNumberOfRoom;
             } else if ($checkNumberOfRoom2) {
                 $room = $checkNumberOfRoom2->getId();
+                $roomValid = $checkNumberOfRoom2;
             } else if ($checkNumberOfRoom3) {
                 $room = $checkNumberOfRoom3->getId();
+                $roomValid = $checkNumberOfRoom3;
+            }
+
+            $roomExit = $entityManager->getRepository(RoomConnection::class)->findOneBy(['user' => $this->getUser()]);
+
+            if ($roomExit) {
+                $entityManager->remove($roomExit);
+                $entityManager->flush();
+                $session->remove('activeRoom');
             }
 
             $session->set('activeRoom', $room);
+
+            $roomConnection = new RoomConnection();
+            $roomConnection->setRoom($roomValid);
+            $roomConnection->setUser($this->getUser());
+            $roomConnection->setIsAccepted(1);
+
+            $entityManager->persist($roomConnection);
+            $entityManager->flush();
 
             return $this->redirectToRoute('room');
         }
