@@ -28,34 +28,44 @@ class IndexController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $roomVerification = $entityManager->getRepository(Room::class)->findOneBy(['code' => $form->get('code')->getData(), 'status' => 'o']);
+                $roomVerification3 = $entityManager->getRepository(Room::class)->findOneBy(['code' => $form->get('code')->getData(), 'status' => '1']);
                 $roomVerification2 = $entityManager->getRepository(RoomConnection::class)->findOneBy(['room' => $roomVerification, 'user' => $this->getUser()]);
+                $roomVerification4 = $entityManager->getRepository(RoomConnection::class)->findOneBy(['room' => $roomVerification3, 'user' => $this->getUser()]);
     
-                if ($roomVerification && !$roomVerification2) {
+                if (($roomVerification || $roomVerification3) && !$roomVerification2 && !$roomVerification4) {
 
                     $roomExit = $entityManager->getRepository(RoomConnection::class)->findOneBy(['user' => $this->getUser()]);
 
-                    if ($roomExit) {
-                        $entityManager->remove($roomExit);
+                    if ($roomVerification3 && $roomVerification3->getStatus() == 1) {
+                        $this->addFlash('warning', 'Pokój już wystartował i nie ma możliwości dołączenia!');
+                    } else {
+                        if ($roomExit) {
+                            $entityManager->remove($roomExit);
+                            $entityManager->flush();
+                            $session->remove('activeRoom');
+                        }
+    
+                        $newRoomConnection->setRoom($roomVerification);
+                        $newRoomConnection->setUser($this->getUser());
+                        $newRoomConnection->setIsAccepted(1);
+        
+                        $entityManager->persist($newRoomConnection);
                         $entityManager->flush();
-                        $session->remove('activeRoom');
+    
+                        $session->set('activeRoom', $newRoomConnection->getRoom()->getId());
+    
+                        return $this->redirectToRoute('room');
                     }
 
-                    $newRoomConnection->setRoom($roomVerification);
-                    $newRoomConnection->setUser($this->getUser());
-                    $newRoomConnection->setIsAccepted(1);
-    
-                    $entityManager->persist($newRoomConnection);
-                    $entityManager->flush();
-
-                    $session->set('activeRoom', $newRoomConnection->getRoom()->getId());
-
-                    return $this->redirectToRoute('room');
-
                 } else {
-                    if (!$roomVerification) {
+                    if (!$roomVerification && !$roomVerification3) {
                         $this->addFlash('warning', 'Podany kod jest niepoprawny lub pokój został zamknięty!');
                     } else {
-                        $session->set('activeRoom', $roomVerification->getId());
+                        if ($roomVerification)
+                            $session->set('activeRoom', $roomVerification->getId());
+                        else if ($roomVerification3)
+                            $session->set('activeRoom', $roomVerification3->getId());
+
                         return $this->redirectToRoute('room');
                     }
                 }

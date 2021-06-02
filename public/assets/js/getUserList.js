@@ -10,11 +10,22 @@ const getUserList = async () =>
     let input = '';
 
     if (list != null) {
+        let counter = 0;
+        let admin = null;
+
         list.forEach(person => {
-            if (person.admin)
+            if (counter == 0) {
+                admin = person.admin;
+                counter++;
+            }
+            else if (person.admin)
                 input = input + '<li>' + person.name + '</li>';
-            else
-                input = input + '<li>' + person.name + ' <a href="room?deleteUser=' + person.id + '">Wyrzuć</a>' + '</li>';
+            else {
+                if (admin)
+                    input = input + '<li>' + person.name + ' <a href="room?deleteUser=' + person.id + '">Wyrzuć</a>' + '</li>';
+                else
+                    input = input + '<li>' + person.name + '</li>';
+            }
         });
 
         listDiv.innerHTML = input;
@@ -29,8 +40,14 @@ const getMe = async () =>
 {
     getListResponse = await sendRequest('GET', '/getMe');
 
-    if (getListResponse == 0) {
+    const list = JSON.parse(getListResponse);
+
+    if (list.in == 0) {
         location.reload();
+    }
+
+    if (list.out == 1) {
+        window.location.replace('/game');
     }
 
     getMe();

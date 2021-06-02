@@ -29,7 +29,11 @@
                     {% if player.admin %}
                         <li>{{ player.name }}</li>
                     {% else %}
-                        <li>{{ player.name }} <a href="/room?deleteUser={{ player.id }}">Wyrzuć</a> </li>
+                        {% if isAdmin %}
+                            <li>{{ player.name }} <a href="/room?deleteUser={{ player.id }}">Wyrzuć</a> </li>
+                        {% else %}
+                            <li>{{ player.name }}</li>
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
             </ul>
@@ -41,7 +45,11 @@
         <div>
             <ol id="questionList">
                 {% for question in questions %}
-                    <li>{{ question.content }} <a href="/room?deleteQuestion={{ question.id }}">Usuń</a> </li>
+                    {% if isAdmin %}
+                        <li>{{ question.content }} <a href="/room?deleteQuestion={{ question.id }}">Usuń</a> </li>
+                    {% else %}
+                        <li>{{ question.content }}</li>
+                    {% endif %}
                 {% endfor %}
             </ol>
         </div>
@@ -62,6 +70,8 @@
 
                 <button type="submit" class="button">Dodaj</button>
             {{ form_end(addRoomQuestion) }}
+
+            <a href="/room?startGame"><button type="button" class="button">Start</button></a>
         {% endif %}
 
     <a href="/room?leaveRoom" class="text-white">Opuść pokój</a>

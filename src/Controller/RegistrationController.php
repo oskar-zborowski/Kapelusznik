@@ -78,7 +78,7 @@ class RegistrationController extends AbstractController
 
             $user->setCode($code);
             $user->setRoles(["ROLE_USER"]);
-            $user->setProfilePicture('unk.jpg');
+            $user->setProfilePicture('unk.jpeg');
             $user->setActiveLoginForm('s');
             $user->setDateOfJoining(new \DateTime());
             $user->setIsActive(1);

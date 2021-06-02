@@ -30,7 +30,7 @@ class NewRoomController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
 
         $checkNumberOfRoom = $entityManager->getRepository(Room::class)->findOneBy(['host' => $this->getUser(), 'status' => 'o']);
-        $checkNumberOfRoom2 = $entityManager->getRepository(Room::class)->findOneBy(['host' => $this->getUser(), 'status' => 'b']);
+        $checkNumberOfRoom2 = $entityManager->getRepository(Room::class)->findOneBy(['host' => $this->getUser(), 'status' => '1']);
         $checkNumberOfRoom3 = $entityManager->getRepository(Room::class)->findOneBy(['host' => $this->getUser(), 'status' => 'c']);
 
         if ($checkNumberOfRoom || $checkNumberOfRoom2 || $checkNumberOfRoom3) {

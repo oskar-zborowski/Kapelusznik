@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Question;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,7 +24,9 @@ class MyQuestionController extends AbstractController
             $question = $entityManager->getRepository(Question::class)->findOneBy(['id' => $_GET['deleteQuestion'], 'creator' => $this->getUser()]);
 
             if ($question) {
-                $entityManager->remove($question);
+                $trash = $entityManager->getRepository(User::class)->findOneBy(['id' => 3]);
+                $question->setCreator($trash);
+                $entityManager->persist($question);
                 $entityManager->flush();
             }
         }

@@ -10,8 +10,17 @@ const getQuestionList = async () =>
     let input = '';
 
     if (list != null) {
+        let admin2 = null;
+
         list.forEach(question => {
-            input = input + '<li>' + question.content + ' <a href="room?deleteQuestion=' + question.id + '">Usuń</a>' + '</li>'
+            if (question['id'] == 0) {
+                admin2 = question['content'];
+            } else {
+                if (admin2)
+                    input = input + '<li>' + question.content + ' <a href="room?deleteQuestion=' + question.id + '">Usuń</a>' + '</li>';
+                else
+                    input = input + '<li>' + question.content + '</li>';
+            }
         });
     
         listDiv2.innerHTML = input;

@@ -86,7 +86,26 @@ class RoomController extends AbstractController
                 if ($deleteQuestion) {
                     $entityManager->remove($deleteQuestion);
                     $entityManager->flush();
+
+                    $num = $room->getNumberOfQuestions()-1;
+                    $room->setNumberOfQuestions($num);
+
+                    $entityManager->persist($room);
+                    $entityManager->flush();
                 }
+            }
+        }
+
+        if (isset($_GET['startGame'])) {
+            $roomClose = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $this->getUser()]);
+
+            if ($roomClose) {
+                $roomClose->setStatus('1');
+                $roomClose->setCurrentQuestionNumber(1);
+                $entityManager->persist($roomClose);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('game');
             }
         }
 
@@ -113,6 +132,10 @@ class RoomController extends AbstractController
 
             if (!$userVerification3) {
                 return $this->redirectToRoute('index');
+            } else {
+                if ($room->getStatus() == 1) {
+                    return $this->redirectToRoute('game');
+                }
             }
         }
 
@@ -156,6 +179,12 @@ class RoomController extends AbstractController
                     $addRoomQuestion->setQuestionNumber($counter);
     
                     $entityManager->persist($addRoomQuestion);
+                    $entityManager->flush();
+
+                    $num = $room->getNumberOfQuestions()+1;
+                    $room->setNumberOfQuestions($num);
+
+                    $entityManager->persist($room);
                     $entityManager->flush();
                 } else {
                     $this->addFlash('warning', 'Wybrane pytanie jest już dodane');
@@ -230,6 +259,22 @@ class RoomController extends AbstractController
         $roomPlayers = $entityManager->getRepository(RoomConnection::class)->findBy(['room' => $room]);
         $players = null;
 
+        $isAdminAll = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $this->getUser()]);
+
+        if ($isAdminAll) {
+            $players[] = [
+                'name' => 'ADMIN',
+                'id' => $this->getUser()->getId(),
+                'admin' => true
+            ];
+        } else {
+            $players[] = [
+                'name' => 'NO ADMIN',
+                'id' => $this->getUser()->getId(),
+                'admin' => false
+            ];
+        }
+
         foreach ($roomPlayers as $rp) {
             $isAdmin = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $rp->getUser()]);
 
@@ -265,6 +310,20 @@ class RoomController extends AbstractController
         $roomQuestions = $entityManager->getRepository(RoomQuestion::class)->findBy(['room' => $room]);
         $questions = null;
 
+        $isAdminAll = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $this->getUser()]);
+
+        if ($isAdminAll) {
+            $questions[] = [
+                'content' => true,
+                'id' => 0,
+            ];
+        } else {
+            $questions[] = [
+                'content' => false,
+                'id' => 0,
+            ];
+        }
+
         foreach ($roomQuestions as $rq) {
             $questions[] = [
                 'content' => $rq->getQuestion()->getContent(),
@@ -288,10 +347,18 @@ class RoomController extends AbstractController
         $room = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber]);
 
         $roomQuestions = $entityManager->getRepository(RoomConnection::class)->findOneBy(['room' => $room, 'user' => $this->getUser()]);
+        $return = null;
         
         if ($roomQuestions)
-            return new Response(1);
+            $return['in'] = 1;
         else
-            return new Response(0);
+            $return['in'] = 0;
+
+        if ($room->getStatus() == 1)
+            $return['out'] = 1;
+        else
+            $return['out'] = 0;
+
+        return new Response(json_encode($return));
     }
 }
