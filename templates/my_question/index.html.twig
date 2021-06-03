@@ -22,18 +22,77 @@
     <div class="container p-5 main">
         <h1 class="h3 mb-3 mt-5 font-weight-normal text-center">Moje pytania</h1>
 
+    <div>Życiowe tematy - pytania ogólne</div><br>
     <table style="width:100%">
         <tr>
             <th>Treść</th>
-            <th>Kategoria</th>
             <th>Data dodania</th>
             <th>Akcje</th>
         </tr>
         <tr>
-            {% for question in questions %}
+            {% for question in questions.OT %}
                 <tr>
                     <td>{{ question.content }}</td>
-                    <td>{{ question.category }}</td>
+                    <td>{{ question.date_added }}</td>
+                    <td><a href="/my_question?deleteQuestion={{ question.id }}">Usuń</a></td>
+                </tr>
+            {% endfor %}
+        </tr>
+    </table>
+
+    <br><br>
+
+    <div>Jazda bez trzymanki - najbardziej niezręczne pytania</div><br>
+    <table style="width:100%">
+        <tr>
+            <th>Treść</th>
+            <th>Data dodania</th>
+            <th>Akcje</th>
+        </tr>
+        <tr>
+            {% for question in questions.JBT %}
+                <tr>
+                    <td>{{ question.content }}</td>
+                    <td>{{ question.date_added }}</td>
+                    <td><a href="/my_question?deleteQuestion={{ question.id }}">Usuń</a></td>
+                </tr>
+            {% endfor %}
+        </tr>
+    </table>
+
+    <br><br>
+
+    <div>Mów mi więcej - słodzenie sobie</div><br>
+    <table style="width:100%">
+        <tr>
+            <th>Treść</th>
+            <th>Data dodania</th>
+            <th>Akcje</th>
+        </tr>
+        <tr>
+            {% for question in questions.MMW %}
+                <tr>
+                    <td>{{ question.content }}</td>
+                    <td>{{ question.date_added }}</td>
+                    <td><a href="/my_question?deleteQuestion={{ question.id }}">Usuń</a></td>
+                </tr>
+            {% endfor %}
+        </tr>
+    </table>
+
+    <br><br>
+
+    <div>18+ - kontekst erotyczny</div><br>
+    <table style="width:100%">
+        <tr>
+            <th>Treść</th>
+            <th>Data dodania</th>
+            <th>Akcje</th>
+        </tr>
+        <tr>
+            {% for question in questions.18 %}
+                <tr>
+                    <td>{{ question.content }}</td>
                     <td>{{ question.date_added }}</td>
                     <td><a href="/my_question?deleteQuestion={{ question.id }}">Usuń</a></td>
                 </tr>

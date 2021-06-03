@@ -48,12 +48,35 @@ class MyQuestionController extends AbstractController
                 $category = '18+ - kontekst erotyczny';
             }
 
-            $response[] = [
+            if ($q->getCategory() == 'OT') {
+                $response['OT'][] = [
                     'id' => $q->getId(),
                     'content' => $q->getContent(),
                     'category' => $category,
                     'date_added' => date_format($q->getDateAdded(), 'd.m.Y'),
-            ];
+                ];
+            } else if ($q->getCategory() == 'JBT') {
+                $response['JBT'][] = [
+                    'id' => $q->getId(),
+                    'content' => $q->getContent(),
+                    'category' => $category,
+                    'date_added' => date_format($q->getDateAdded(), 'd.m.Y'),
+                ];
+            } else if ($q->getCategory() == 'MMW') {
+                $response['MMW'][] = [
+                    'id' => $q->getId(),
+                    'content' => $q->getContent(),
+                    'category' => $category,
+                    'date_added' => date_format($q->getDateAdded(), 'd.m.Y'),
+                ];
+            } else if ($q->getCategory() == '18') {
+                $response['18'][] = [
+                    'id' => $q->getId(),
+                    'content' => $q->getContent(),
+                    'category' => $category,
+                    'date_added' => date_format($q->getDateAdded(), 'd.m.Y'),
+                ];
+            }
         }
 
         return $this->render('my_question/index.html.twig', [
