@@ -29,8 +29,8 @@ class NewQuestionController extends AbstractController
 
             $checkNumberOfQuestion = $entityManager->getRepository(Question::class)->findBy(['creator' => $this->getUser()]);
 
-            if (count($checkNumberOfQuestion) >= 20) {
-                $this->addFlash('warning', 'Osiągnięto maksymalną liczbę dodanych pytań');
+            if (count($checkNumberOfQuestion) >= 30) {
+                $this->addFlash('warning', 'Osiągnięto maksymalną liczbę 30 dodanych pytań');
             } else {
                 $newQuestion->setCreator($this->getUser());
                 $newQuestion->setGender('a');

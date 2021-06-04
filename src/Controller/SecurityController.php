@@ -138,7 +138,7 @@ class SecurityController extends AbstractController
             $response = 0;
         }
 
-        // sleep(2); //TODO: docelowo usunąć
+        sleep(1); //TODO: docelowo zakomentować albo nie xd
 
         return new Response($response);
     }

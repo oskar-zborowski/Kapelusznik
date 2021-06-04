@@ -99,6 +99,10 @@ class GameController extends AbstractController
         $userAnswer = $entityManager->getRepository(Answer::class)->findOneBy(['room_question' => $question, 'user' => $this->getUser()]);
         $usersAnswer = $entityManager->getRepository(Answer::class)->findBy(['room_question' => $question]);
 
+        $usersNumber = count($entityManager->getRepository(RoomConnection::class)->findBy(['room' => $room]));
+
+        $usersNumber = 'Udzieliło odpowiedzi: ' . count($usersAnswer) . '/'  . $usersNumber . ' (' . round(count($usersAnswer)/$usersNumber, 2) . '%)';
+
         if ($userAnswer) {
             $confirm = true;
         }
@@ -168,7 +172,8 @@ class GameController extends AbstractController
             'table' => $table,
             'sum' => $answerNumber,
             'round' => $room->getCurrentQuestionNumber(),
-            'allRound' => $room->getNumberOfQuestions()
+            'allRound' => $room->getNumberOfQuestions(),
+            'usersNumber' => $usersNumber
         ]);
     }
 
@@ -204,5 +209,31 @@ class GameController extends AbstractController
         }
 
         return new Response($state);
+    }
+
+    /**
+     * @Route("/getAnswersNumber", name="getAnswersNumber")
+     */
+    public function getAnswersNumber(SessionInterface $session)
+    {
+        sleep(1);
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $count = 0;
+
+        if ($session->get('activeRoom')) {
+            $roomNumber = $session->get('activeRoom');
+            $room = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber]);
+            $question = $entityManager->getRepository(RoomQuestion::class)->findOneBy(['room' => $room, 'question_number' => $room->getCurrentQuestionNumber()]);
+            
+            $usersAnswer = $entityManager->getRepository(Answer::class)->findBy(['room_question' => $question]);
+
+            $usersNumber = count($entityManager->getRepository(RoomConnection::class)->findBy(['room' => $room]));
+
+            $usersNumber = 'Udzieliło odpowiedzi: ' . count($usersAnswer) . '/'  . $usersNumber . ' (' . round(count($usersAnswer)/$usersNumber, 2) . '%)';
+        }
+
+        return new Response($usersNumber);
     }
 }

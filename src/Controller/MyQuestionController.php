@@ -93,7 +93,8 @@ class MyQuestionController extends AbstractController
 
         return $this->render('my_question/index.html.twig', [
             'questions' => $response,
-            'available' => $available
+            'available' => $available,
+            'numberOfQuestions' => count($questions)
         ]);
     }
 }
