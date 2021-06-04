@@ -37,7 +37,7 @@ class IndexController extends AbstractController
                     $roomExit = $entityManager->getRepository(RoomConnection::class)->findOneBy(['user' => $this->getUser()]);
 
                     if ($roomVerification3 && $roomVerification3->getStatus() == 1) {
-                        $this->addFlash('warning', 'Pokój już wystartował i nie ma możliwości dołączenia!');
+                        $this->addFlash('error', 'Pokój już wystartował i nie ma możliwości dołączenia!');
                     } else {
                         if ($roomExit) {
                             $entityManager->remove($roomExit);
@@ -59,7 +59,7 @@ class IndexController extends AbstractController
 
                 } else {
                     if (!$roomVerification && !$roomVerification3) {
-                        $this->addFlash('warning', 'Podany kod jest niepoprawny lub pokój został zamknięty!');
+                        $this->addFlash('error', 'Podany kod jest niepoprawny lub pokój został zamknięty!');
                     } else {
                         if ($roomVerification)
                             $session->set('activeRoom', $roomVerification->getId());

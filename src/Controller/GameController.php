@@ -113,7 +113,7 @@ class GameController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             if ($userAnswer) {
-                $this->addFlash('warning', 'Odpowiedź na to pytanie już została przez Ciebie udzielona!');
+                $this->addFlash('success', 'Odpowiedź na to pytanie już została przez Ciebie udzielona!');
             } else {
                 $confirm = true;
                 $answer->setRoomQuestion($question);

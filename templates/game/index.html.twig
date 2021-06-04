@@ -34,6 +34,8 @@
 
                     <button type="submit" class="button">Odpowiedz</button>
                 {{ form_end(answer) }}
+            {% else %}
+                <br><div>Odpowiedź już została przez Ciebie udzielona</div>
             {% endif %}
         {% elseif type == 'result' %}
             {% if sum > 0 %}
@@ -46,7 +48,7 @@
         {% endif %}
 
         {% if isAdmin %}
-
+            <br>
             {% if round > 1 %}
                 <br><a href="/game?previousRound" class="text-white">Poprzednia runda</a> | 
             {% endif %}

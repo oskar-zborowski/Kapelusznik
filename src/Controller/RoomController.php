@@ -115,23 +115,31 @@ class RoomController extends AbstractController
                 $userNum = $entityManager->getRepository(RoomConnection::class)->findBy(['room' => $roomClose]);
 
                 if (count($userNum) > 2) {
-                    if ($roomClose->getCurrentQuestionNumber() < 1) {
-                        $roomClose->setStatus('1');
-                        $roomClose->setCurrentQuestionNumber(1);
-                        $roomClose->setIsShown(0);
-                        $entityManager->persist($roomClose);
-                        $entityManager->flush();
-        
-                        return $this->redirectToRoute('game');
+                    $questionNum = $entityManager->getRepository(RoomQuestion::class)->findBy(['room' => $roomClose]);
+
+                    if (count($questionNum) > 0) {
+                        if ($roomClose->getCurrentQuestionNumber() < 1) {
+                            $roomClose->setStatus('1');
+                            $roomClose->setCurrentQuestionNumber(1);
+                            $roomClose->setIsShown(0);
+                            $entityManager->persist($roomClose);
+                            $entityManager->flush();
+            
+                            return $this->redirectToRoute('game');
+                        } else {
+                            $roomClose->setStatus('1');
+                            $entityManager->persist($roomClose);
+                            $entityManager->flush();
+                            
+                            return $this->redirectToRoute('game');
+                        }
                     } else {
-                        $roomClose->setStatus('1');
-                        $entityManager->persist($roomClose);
-                        $entityManager->flush();
-                        
-                        return $this->redirectToRoute('game');
+                        $this->addFlash('warning', 'Aby wystartować pokój potrzeba dodać conajmniej 1 pytanie!');
+                        return $this->redirectToRoute('room');
                     }
                 } else {
                     $this->addFlash('warning', 'Aby wystartować pokój potrzeba minimum 3 graczy!');
+                    return $this->redirectToRoute('room');
                 }
             }
         }
@@ -182,9 +190,9 @@ class RoomController extends AbstractController
                 $entityManager->flush();
             } else {
                 if (!$userVerification)
-                    $this->addFlash('warning', 'Podany kod jest niepoprawny!');
+                    $this->addFlash('error', 'Podany kod jest niepoprawny!');
                 else
-                    $this->addFlash('warning', 'Podana osoba jest już obecna w pokoju!');
+                    $this->addFlash('success', 'Podana osoba jest już obecna w pokoju!');
             }
         }
 
@@ -214,7 +222,7 @@ class RoomController extends AbstractController
                     $entityManager->persist($room);
                     $entityManager->flush();
                 } else {
-                    $this->addFlash('warning', 'Wybrane pytanie jest już dodane');
+                    $this->addFlash('success', 'Wybrane pytanie jest już dodane');
                 }
             }
         }
