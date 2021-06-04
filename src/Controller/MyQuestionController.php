@@ -39,6 +39,10 @@ class MyQuestionController extends AbstractController
         $available['JBT'] = false;
         $available['MMW'] = false;
         $available['18'] = false;
+        $counterQuestion['OT'] = 0;
+        $counterQuestion['JBT'] = 0;
+        $counterQuestion['MMW'] = 0;
+        $counterQuestion['18'] = 0;
 
         foreach ($questions as $q) {
 
@@ -54,36 +58,44 @@ class MyQuestionController extends AbstractController
 
             if ($q->getCategory() == 'OT') {
                 $available['OT'] = true;
+                $counterQuestion['OT']++;
 
                 $response['OT'][] = [
                     'id' => $q->getId(),
+                    'counter' => $counterQuestion['OT'],
                     'content' => $q->getContent(),
                     'category' => $category,
                     'date_added' => date_format($q->getDateAdded(), 'd.m.Y'),
                 ];
             } else if ($q->getCategory() == 'JBT') {
                 $available['JBT'] = true;
+                $counterQuestion['JBT']++;
 
                 $response['JBT'][] = [
                     'id' => $q->getId(),
+                    'counter' => $counterQuestion['JBT'],
                     'content' => $q->getContent(),
                     'category' => $category,
                     'date_added' => date_format($q->getDateAdded(), 'd.m.Y'),
                 ];
             } else if ($q->getCategory() == 'MMW') {
                 $available['MMW'] = true;
+                $counterQuestion['MMW']++;
 
                 $response['MMW'][] = [
                     'id' => $q->getId(),
+                    'counter' => $counterQuestion['MMW'],
                     'content' => $q->getContent(),
                     'category' => $category,
                     'date_added' => date_format($q->getDateAdded(), 'd.m.Y'),
                 ];
             } else if ($q->getCategory() == '18') {
                 $available['18'] = true;
+                $counterQuestion['18']++;
 
                 $response['18'][] = [
                     'id' => $q->getId(),
+                    'counter' => $counterQuestion['18'],
                     'content' => $q->getContent(),
                     'category' => $category,
                     'date_added' => date_format($q->getDateAdded(), 'd.m.Y'),

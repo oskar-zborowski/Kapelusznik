@@ -27,12 +27,14 @@
 
         <table style="width:100%">
             <tr>
+                <th>Lp.</th>
                 <th>Treść</th>
                 <th>Data dodania</th>
                 <th>Akcje</th>
             </tr>
 
             <tr style="border-top: 2px solid white;">
+                <td></td>
                 <td style="font-weight: bold;">Życiowe tematy - pytania ogólne</td>
                 <td></td>
                 <td></td>
@@ -41,6 +43,7 @@
                 {% if available.OT %}
                     {% for question in questions.OT %}
                         <tr>
+                            <td>{{ question.counter }}.</td>
                             <td>{{ question.content }}</td>
                             <td>{{ question.date_added }}</td>
                             <td><a href="/my_question?deleteQuestion={{ question.id }}">Usuń</a></td>
@@ -50,6 +53,7 @@
             </tr>
 
             <tr style="border-top: 2px solid white;">
+                <td></td>
                 <td style="font-weight: bold;">Jazda bez trzymanki - najbardziej niezręczne pytania</td>
                 <td></td>
                 <td></td>
@@ -58,6 +62,7 @@
                 {% if available.JBT %}
                     {% for question in questions.JBT %}
                         <tr>
+                            <td>{{ question.counter }}.</td>
                             <td>{{ question.content }}</td>
                             <td>{{ question.date_added }}</td>
                             <td><a href="/my_question?deleteQuestion={{ question.id }}">Usuń</a></td>
@@ -67,6 +72,7 @@
             </tr>
 
             <tr style="border-top: 2px solid white;">
+                <td></td>
                 <td style="font-weight: bold;">Mów mi więcej - słodzenie sobie</td>
                 <td></td>
                 <td></td>
@@ -75,6 +81,7 @@
                 {% if available.MMW %}
                     {% for question in questions.MMW %}
                         <tr>
+                            <td>{{ question.counter }}.</td>
                             <td>{{ question.content }}</td>
                             <td>{{ question.date_added }}</td>
                             <td><a href="/my_question?deleteQuestion={{ question.id }}">Usuń</a></td>
@@ -84,6 +91,7 @@
             </tr>
 
             <tr style="border-top: 2px solid white;">
+                <td></td>
                 <td style="font-weight: bold;">18+ - kontekst erotyczny</td>
                 <td></td>
                 <td></td>
@@ -92,6 +100,7 @@
                 {% if available.18 %}
                     {% for question in questions.18 %}
                         <tr>
+                            <td>{{ question.counter }}.</td>
                             <td>{{ question.content }}</td>
                             <td>{{ question.date_added }}</td>
                             <td><a href="/my_question?deleteQuestion={{ question.id }}">Usuń</a></td>
