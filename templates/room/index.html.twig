@@ -3,23 +3,24 @@
 {% block title %}{{ parent() }} - pokój{% endblock %}
 
 {% block body %}
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">
-            {{ message }}
-        </div>
-    {% endfor %}
-    {% for message in app.flashes('error') %}
-        <div class="alert alert-danger">
-            {{ message }}
-        </div>
-    {% endfor %}
-    {% for message in app.flashes('warning') %}
-        <div class="alert alert-warning">
-            {{ message }}
-        </div>
-    {% endfor %}
-    
     <div class="container p-5 main">
+    
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('warning') %}
+            <div class="alert alert-warning">
+                {{ message }}
+            </div>
+        {% endfor %}
+
         <h1 class="h3 mb-3 mt-5 font-weight-normal text-center">Pokój</h1>
         <p>KOD: {{ code }}</p>
         <p>Lista osób w pokoju:</p>
@@ -39,7 +40,16 @@
             </ul>
         </div>
 
-        <br>
+        {% if isAdmin %}
+            {% form_theme newRoomConnection 'bootstrap_4_layout.html.twig' %}
+            {{ form_start(newRoomConnection) }}
+                {{ form_row(newRoomConnection.code) }}
+
+                <button type="submit" class="button">Dodaj gracza</button>
+            {{ form_end(newRoomConnection) }}
+        {% endif %}
+
+        <br><br>
 
         <p>Lista pytań:</p>
         <div>
@@ -54,30 +64,23 @@
             </ol>
         </div>
 
-        <br>
-
         {% if isAdmin %}
-            {% form_theme newRoomConnection 'bootstrap_4_layout.html.twig' %}
-            {{ form_start(newRoomConnection) }}
-                {{ form_row(newRoomConnection.code) }}
-
-                <button type="submit" class="button">Dodaj</button>
-            {{ form_end(newRoomConnection) }}
 
             {% form_theme addRoomQuestion 'bootstrap_4_layout.html.twig' %}
             {{ form_start(addRoomQuestion) }}
                 {{ form_row(addRoomQuestion.question) }}
 
-                <button type="submit" class="button">Dodaj</button>
+                <button type="submit" class="button">Dodaj pytanie</button>
             {{ form_end(addRoomQuestion) }}
-
-            <a href="/room?startGame"><button type="button" class="button">Start</button></a>
         {% endif %}
 
-    <a href="/room?leaveRoom" class="text-white">Opuść pokój</a>
-    {% if isAdmin %}
-        <br><a href="/room?closeRoom" class="text-white">Zamknij pokój</a>
-    {% endif %}
+        <br><br>
+
+        <a href="/room?leaveRoom" class="text-white">Opuść pokój</a>
+        {% if isAdmin %}
+            | <a href="/room?closeRoom" class="text-white">Zamknij pokój</a>
+            | <a href="/room?startGame" class="text-white">Przejdź do gry</a>
+        {% endif %}
 
     </div>
 

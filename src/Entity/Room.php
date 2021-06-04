@@ -65,6 +65,11 @@ class Room
      */
     private $roomQuestions;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $is_shown;
+
     public function __construct()
     {
         $this->roomConnections = new ArrayCollection();
@@ -216,6 +221,18 @@ class Room
                 $roomQuestion->setRoom(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsShown(): ?bool
+    {
+        return $this->is_shown;
+    }
+
+    public function setIsShown(?bool $is_shown): self
+    {
+        $this->is_shown = $is_shown;
 
         return $this;
     }

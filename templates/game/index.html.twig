@@ -1,20 +1,75 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello GameController!{% endblock %}
+{% block title %}{{ parent() }} - gra{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    
+    <div class="container p-5 main">
+    
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('warning') %}
+            <div class="alert alert-warning">
+                {{ message }}
+            </div>
+        {% endfor %}
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        <h1 class="h3 mb-3 mt-5 font-weight-normal text-center">Pokój</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/xampp/htdocs/Kapelusznik/src/Controller/GameController.php'|file_link(0) }}">src/Controller/GameController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/xampp/htdocs/Kapelusznik/templates/game/index.html.twig'|file_link(0) }}">templates/game/index.html.twig</a></code></li>
-    </ul>
-</div>
+        <div> {{ round }}. {{ question }} </div>
+
+        {% if type == 'form' %}
+            {% if confirm == false %}
+                {% form_theme answer 'bootstrap_4_layout.html.twig' %}
+                {{ form_start(answer) }}
+                    {{ form_row(answer.answer) }}
+
+                    <button type="submit" class="button">Odpowiedz</button>
+                {{ form_end(answer) }}
+            {% endif %}
+        {% elseif type == 'result' %}
+            {% if sum > 0 %}
+                <ol>
+                    {% for t in table|sort((a, b) => a.1 <=> b.1)|reverse %}
+                        <li> {{ t.0 }} - {{ t.1 }} głosy ({{(t.1 / sum * 100)|round(1)}}%) </li>
+                    {% endfor %}
+                </ol>
+            {% endif %}
+        {% endif %}
+
+        {% if isAdmin %}
+
+            {% if round > 1 %}
+                <br><a href="/game?previousRound" class="text-white">Poprzednia runda</a> | 
+            {% endif %}
+
+            {% if type == 'form' %}
+                <a href="/game?showResult" class="text-white">Wyświetl wyniki</a> | 
+            {% elseif type == 'result' %}
+                <a href="/game?showGame" class="text-white">Wyświetl formularz</a> | 
+            {% endif %}
+
+            {% if round < allRound %}
+                <a href="/game?nextRound" class="text-white">Następna runda</a> | 
+                <a href="/game?theEnd" class="text-white">Zakończ</a>
+            {% else %}
+                <a href="/game?nextRound" class="text-white">Zakończ</a>
+            {% endif %}
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/js/gameAjax.js') }}"></script>
 {% endblock %}

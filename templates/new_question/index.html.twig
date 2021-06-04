@@ -3,23 +3,24 @@
 {% block title %}{{ parent() }} - Tworzenie nowych pytań{% endblock %}
 
 {% block body %}
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">
-            {{ message }}
-        </div>
-    {% endfor %}
-    {% for message in app.flashes('error') %}
-        <div class="alert alert-danger">
-            {{ message }}
-        </div>
-    {% endfor %}
-    {% for message in app.flashes('warning') %}
-        <div class="alert alert-warning">
-            {{ message }}
-        </div>
-    {% endfor %}
-    
     <div class="container p-5 main">
+    
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('warning') %}
+            <div class="alert alert-warning">
+                {{ message }}
+            </div>
+        {% endfor %}
+
         <h1 class="h3 mb-3 mt-5 font-weight-normal text-center">Utwórz nowe pytanie</h1>
 
         {% form_theme newQuestion 'bootstrap_4_layout.html.twig' %}

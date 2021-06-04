@@ -83,6 +83,8 @@ class RoomController extends AbstractController
                 $question = $entityManager->getRepository(Question::class)->findOneBy(['id' => $_GET['deleteQuestion']]);
                 $deleteQuestion = $entityManager->getRepository(RoomQuestion::class)->findOneBy(['room' => $roomClose, 'question' => $question]);
 
+                $deleteQuestionNumber = $deleteQuestion->getQuestionNumber();
+
                 if ($deleteQuestion) {
                     $entityManager->remove($deleteQuestion);
                     $entityManager->flush();
@@ -92,6 +94,16 @@ class RoomController extends AbstractController
 
                     $entityManager->persist($room);
                     $entityManager->flush();
+
+                    $roomQuestion = $entityManager->getRepository(RoomQuestion::class)->findBy(['room' => $roomClose]);
+
+                    foreach ($roomQuestion as $rq) {
+                        if ($rq->getQuestionNumber() > $deleteQuestionNumber) {
+                            $rq->setQuestionNumber($rq->getQuestionNumber()-1);
+                            $entityManager->persist($rq);
+                            $entityManager->flush();
+                        }
+                    }
                 }
             }
         }
@@ -100,12 +112,27 @@ class RoomController extends AbstractController
             $roomClose = $entityManager->getRepository(Room::class)->findOneBy(['id' => $roomNumber, 'host' => $this->getUser()]);
 
             if ($roomClose) {
-                $roomClose->setStatus('1');
-                $roomClose->setCurrentQuestionNumber(1);
-                $entityManager->persist($roomClose);
-                $entityManager->flush();
+                $userNum = $entityManager->getRepository(RoomConnection::class)->findBy(['room' => $roomClose]);
 
-                return $this->redirectToRoute('game');
+                if (count($userNum) > 2) {
+                    if ($roomClose->getCurrentQuestionNumber() < 1) {
+                        $roomClose->setStatus('1');
+                        $roomClose->setCurrentQuestionNumber(1);
+                        $roomClose->setIsShown(0);
+                        $entityManager->persist($roomClose);
+                        $entityManager->flush();
+        
+                        return $this->redirectToRoute('game');
+                    } else {
+                        $roomClose->setStatus('1');
+                        $entityManager->persist($roomClose);
+                        $entityManager->flush();
+                        
+                        return $this->redirectToRoute('game');
+                    }
+                } else {
+                    $this->addFlash('warning', 'Aby wystartować pokój potrzeba minimum 3 graczy!');
+                }
             }
         }
 
