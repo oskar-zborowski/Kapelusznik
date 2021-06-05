@@ -54,6 +54,7 @@ class RoomController extends AbstractController
                 $entityManager->remove($roomExit);
                 $entityManager->flush();
                 $session->remove('activeRoom');
+                return $this->redirectToRoute('index');
             }
         }
 
@@ -73,6 +74,7 @@ class RoomController extends AbstractController
                 $entityManager->flush();
 
                 $session->remove('activeRoom');
+                return $this->redirectToRoute('index');
             }
         }
 
@@ -92,6 +94,10 @@ class RoomController extends AbstractController
                     $num = $room->getNumberOfQuestions()-1;
                     $room->setNumberOfQuestions($num);
 
+                    if ($deleteQuestionNumber <= $room->getCurrentQuestionNumber()) {
+                        $room->setCurrentQuestionNumber($room->getCurrentQuestionNumber()-1);
+                    }
+
                     $entityManager->persist($room);
                     $entityManager->flush();
 
@@ -104,6 +110,8 @@ class RoomController extends AbstractController
                             $entityManager->flush();
                         }
                     }
+
+                    return $this->redirectToRoute('room');
                 }
             }
         }
@@ -154,6 +162,7 @@ class RoomController extends AbstractController
                 if ($deleteUser) {
                     $entityManager->remove($deleteUser);
                     $entityManager->flush();
+                    return $this->redirectToRoute('room');
                 }
             }
         }
@@ -188,6 +197,7 @@ class RoomController extends AbstractController
 
                 $entityManager->persist($newRoomConnection);
                 $entityManager->flush();
+                return $this->redirectToRoute('room');
             } else {
                 if (!$userVerification)
                     $this->addFlash('error', 'Podany kod jest niepoprawny!');
@@ -221,6 +231,7 @@ class RoomController extends AbstractController
 
                     $entityManager->persist($room);
                     $entityManager->flush();
+                    return $this->redirectToRoute('room');
                 } else {
                     $this->addFlash('success', 'Wybrane pytanie jest już dodane');
                 }
@@ -284,7 +295,7 @@ class RoomController extends AbstractController
      */
     public function userList(SessionInterface $session)
     {
-        sleep(1);
+        // sleep(0.3);
 
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -335,7 +346,7 @@ class RoomController extends AbstractController
      */
     public function questionList(SessionInterface $session)
     {
-        sleep(1);
+        // sleep(0.3);
 
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -374,7 +385,7 @@ class RoomController extends AbstractController
      */
     public function getMe(SessionInterface $session)
     {
-        sleep(1);
+        // sleep(0.3);
 
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -394,6 +405,11 @@ class RoomController extends AbstractController
         else
             $return['out'] = 0;
 
-        return new Response(json_encode($return));
+        $exit['exit'] = 1;
+
+        if ($room->getStatus() == 'o')
+            return new Response(json_encode($return));
+        else if ($room->getStatus() == '1')
+            return new Response(json_encode($exit));
     }
 }

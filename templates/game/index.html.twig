@@ -39,7 +39,7 @@
             {% endif %}
         {% elseif type == 'result' %}
             {% if sum > 0 %}
-                <ol>
+                <br><ol>
                     {% for t in table|sort((a, b) => a.1 <=> b.1)|reverse %}
                         <li> {{ t.0 }} - {{ t.1 }} głosy ({{(t.1 / sum * 100)|round(2)}}%) </li>
                     {% endfor %}
@@ -49,8 +49,10 @@
 
         <br><div id="usersNumber">{{ usersNumber }}</div>
 
+        <br>
+        <a href="/room?leaveRoom" class="text-white">Opuść pokój</a>
         {% if isAdmin %}
-            <br>
+             | 
             {% if round > 1 %}
                 <br><a href="/game?previousRound" class="text-white">Poprzednia runda</a> | 
             {% endif %}

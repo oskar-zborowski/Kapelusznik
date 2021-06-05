@@ -201,6 +201,8 @@ class MyAccountController extends AbstractController
                     $this->addFlash('error', 'Wystąpił nieoczekiwany błąd!');
                 }
             }
+
+            return $this->redirectToRoute('my_account');
         }
 
         if ($form2->isSubmitted() && $form2->isValid()) {
@@ -221,6 +223,8 @@ class MyAccountController extends AbstractController
             $entityManager->persist($userActivity);
             $entityManager->persist($user);
             $entityManager->flush();
+
+            return $this->redirectToRoute('my_account');
         }
 
         if (isset($_GET['deleteAccount'])) {

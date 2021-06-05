@@ -42,15 +42,15 @@ const getMe = async () =>
 
     const list = JSON.parse(getListResponse);
 
-    if (list.in == 0) {
-        location.reload();
-    }
-
-    if (list.out == 1) {
+    if (list.exit == 1) {
         window.location.replace('/game');
+    } else if (list.in == 0) {
+        location.reload();
+    } else if (list.out == 1) {
+        window.location.replace('/game');
+    } else {
+        getMe();
     }
-
-    getMe();
 }
 
 getUserList();

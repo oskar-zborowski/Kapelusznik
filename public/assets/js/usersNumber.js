@@ -5,9 +5,10 @@ const getUsersNumber = async () =>
 {
     getListResponse4 = await sendRequest('GET', '/getAnswersNumber');
 
-    listDiv4.innerHTML = getListResponse4;
-
-    getUsersNumber();
+    if (getListResponse4 != null) {
+        listDiv4.innerHTML = getListResponse4;
+        getUsersNumber();
+    }
 }
 
 getUsersNumber();

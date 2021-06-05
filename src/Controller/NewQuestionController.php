@@ -46,6 +46,8 @@ class NewQuestionController extends AbstractController
 
             $newQuestion = new Question();
             $form = $this->createForm(NewQuestionType::class, $newQuestion);
+
+            return $this->redirectToRoute('new_question');
         }
         
         return $this->render('new_question/index.html.twig', [

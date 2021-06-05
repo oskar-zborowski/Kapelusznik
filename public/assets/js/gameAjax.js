@@ -6,9 +6,11 @@ const getGameAjax = async () =>
 
     if (getListResponse3 == 1) {
         location.reload();
+    } else if (getListResponse3 == 0) {
+        getGameAjax();
+    } else if (getListResponse3 == 2) {
+        location.reload();
     }
-
-    getGameAjax();
 }
 
 getGameAjax();

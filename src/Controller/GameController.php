@@ -101,7 +101,17 @@ class GameController extends AbstractController
 
         $usersNumber = count($entityManager->getRepository(RoomConnection::class)->findBy(['room' => $room]));
 
-        $usersNumber = 'Udzieliło odpowiedzi: ' . count($usersAnswer) . '/'  . $usersNumber . ' (' . round(count($usersAnswer)/$usersNumber, 2) . '%)';
+        $session->set('usersNumberGame', $usersNumber);
+
+        if ($usersNumber <= 2) {
+            $room->setStatus('o');
+            $entityManager->persist($room);
+            $entityManager->flush();
+            $this->addFlash('warning', 'Aby kontynuować grę potrzeba minimum 3 graczy!');
+            return $this->redirectToRoute('room');
+        }
+
+        $usersNumber = 'Udzieliło odpowiedzi: ' . count($usersAnswer) . '/'  . $usersNumber . ' (' . round(count($usersAnswer)/$usersNumber*100, 2) . '%)';
 
         if ($userAnswer) {
             $confirm = true;
@@ -124,11 +134,14 @@ class GameController extends AbstractController
                 $answer->setUser($this->getUser());
 
                 $userAns = $entityManager->getRepository(User::class)->findOneBy(['id' => $form->get('answer')->getData()]);
+
                 $userRoomConnection = $entityManager->getRepository(RoomConnection::class)->findOneBy(['user' => $userAns, 'room' => $room]);
                 $answer->setAnswer($userRoomConnection);
 
                 $entityManager->persist($answer);
                 $entityManager->flush();
+
+                return $this->redirectToRoute('game');
             }
         }
 
@@ -163,6 +176,12 @@ class GameController extends AbstractController
         } else
             $type = 'form';
 
+        unset($answer);
+        unset($form);
+
+        $answer = new Answer();
+        $form = $this->createForm(AnswerType::class, $answer);
+
         return $this->render('game/index.html.twig', [
             'answer' => $form->createView(),
             'question' => $questionContent,
@@ -182,7 +201,7 @@ class GameController extends AbstractController
      */
     public function getState(SessionInterface $session)
     {
-        sleep(1);
+        // sleep(0.3);
 
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -193,7 +212,7 @@ class GameController extends AbstractController
 
         $state = 0;
 
-        if ($room->getStatus() != 1)
+        if ($room->getStatus() != '1')
             $state = 1;
 
         if ($session->get('activeQuestion')) {
@@ -208,7 +227,17 @@ class GameController extends AbstractController
             $session->set('isShown', $room->getIsShown());
         }
 
-        return new Response($state);
+        $usersNumber = count($entityManager->getRepository(RoomConnection::class)->findBy(['room' => $room]));
+
+        if ($session->get('usersNumberGame') != $usersNumber) {
+            $state = 1;
+            $session->set('usersNumberGame', $usersNumber);
+        }
+
+        if ($room->getStatus() == 1)
+            return new Response($state);
+        else
+            return new Response(2);
     }
 
     /**
@@ -216,7 +245,7 @@ class GameController extends AbstractController
      */
     public function getAnswersNumber(SessionInterface $session)
     {
-        sleep(1);
+        // sleep(0.3);
 
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -231,9 +260,12 @@ class GameController extends AbstractController
 
             $usersNumber = count($entityManager->getRepository(RoomConnection::class)->findBy(['room' => $room]));
 
-            $usersNumber = 'Udzieliło odpowiedzi: ' . count($usersAnswer) . '/'  . $usersNumber . ' (' . round(count($usersAnswer)/$usersNumber, 2) . '%)';
+            $usersNumber = 'Udzieliło odpowiedzi: ' . count($usersAnswer) . '/'  . $usersNumber . ' (' . round(count($usersAnswer)/$usersNumber*100, 2) . '%)';
         }
 
-        return new Response($usersNumber);
+        if ($room->getStatus() == '1')
+            return new Response($usersNumber);
+        else
+            return new Response();
     }
 }
