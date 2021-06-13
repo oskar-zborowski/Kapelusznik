@@ -34,7 +34,7 @@ Wojciech Mila - Frontend Developer
             {% if app.user %}
                 <a href="{{ path('my_account') }}" class="mx-sm-5 text-decoration-none text-white">
                     <img src="{{ asset('images/'~app.user.profilePicture) }}" height="70" class="rounded-circle">
-                    <span class="mx-1">{{ app.user.name }}</span>
+                    <span class="mx-1">{{ app.user.name }} [{{ app.user.code }}]</span>
                 </a>
             {% endif %}
 
