@@ -22,7 +22,7 @@
             </div>
         {% endfor %}
 
-        <h1 class="h3 mb-3 mt-5 font-weight-normal text-center">Pokój</h1>
+        <h1 class="mt-5 mb-3 text-center h3 font-weight-normal">Pokój</h1>
 
         <div> {{ round }}. {{ question }} </div>
 
@@ -50,24 +50,44 @@
         <br><div id="usersNumber">{{ usersNumber }}</div>
 
         <br>
-        <a href="/room?leaveRoom" class="text-white">Opuść pokój</a>
+        <a href="/room?leaveRoom" class="text-center text-white icon-wrapper">
+            <img src="{{ asset('assets/img/leaveRoom.png') }}" class="icon"><br />
+            Opuść pokój
+        </a>
         {% if isAdmin %}
-             | 
             {% if round > 1 %}
-                <br><a href="/game?previousRound" class="text-white">Poprzednia runda</a> | 
+                <a href="/game?previousRound" class="text-center text-white icon-wrapper">
+                    <img src="{{ asset('assets/img/previousRound.png') }}" class="icon"><br />
+                    Poprzednia runda
+                </a>
             {% endif %}
 
             {% if type == 'form' %}
-                <a href="/game?showResult" class="text-white">Wyświetl wyniki</a> | 
+                <a href="/game?showResult" class="text-center text-white icon-wrapper">
+                    <img src="{{ asset('assets/img/showResult.png') }}" class="icon"><br />
+                    Wyświetl wyniki
+                </a>
             {% elseif type == 'result' %}
-                <a href="/game?showGame" class="text-white">Wyświetl formularz</a> | 
+                <a href="/game?showGame" class="text-center text-white icon-wrapper">
+                    <img src="{{ asset('assets/img/showGame.png') }}" class="icon"><br />
+                    Wyświetl formularz
+                </a>
             {% endif %}
 
             {% if round < allRound %}
-                <a href="/game?nextRound" class="text-white">Następna runda</a> | 
-                <a href="/game?theEnd" class="text-white">Zakończ</a>
+                <a href="/game?nextRound" class="text-center text-white icon-wrapper">
+                    <img src="{{ asset('assets/img/nextRound.png') }}" class="icon"><br />
+                    Następna runda
+                </a>
+                <a href="/game?theEnd" class="text-center text-white icon-wrapper">
+                    <img src="{{ asset('assets/img/theEnd.png') }}" class="icon"><br />
+                    Zakończ
+                </a>
             {% else %}
-                <a href="/game?nextRound" class="text-white">Zakończ</a>
+                <a href="/game?nextRound" class="text-center text-white icon-wrapper">
+                    <img src="{{ asset('assets/img/theEnd.png') }}" class="icon"><br />
+                    Zakończ
+                </a>
             {% endif %}
         {% endif %}
 

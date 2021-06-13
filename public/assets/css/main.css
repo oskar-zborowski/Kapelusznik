@@ -63,3 +63,14 @@ form input, select {
     display: block;
     margin: 0 auto;
 }
+
+.icon {
+    width: 40px;
+    filter: invert();
+}
+
+.icon-wrapper {
+    display: inline-block;
+    margin-right: 20px;
+    text-decoration: none;
+}

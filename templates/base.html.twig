@@ -32,10 +32,10 @@ Wojciech Mila - Frontend Developer
             </a>
 
             {% if app.user %}
-                <div class="mx-sm-5">
+                <a href="{{ path('my_account') }}" class="mx-sm-5 text-decoration-none text-white">
                     <img src="{{ asset('images/'~app.user.profilePicture) }}" height="70" class="rounded-circle">
                     <span class="mx-1">{{ app.user.name }}</span>
-                </div>
+                </a>
             {% endif %}
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">

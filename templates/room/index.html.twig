@@ -21,7 +21,7 @@
             </div>
         {% endfor %}
 
-        <h1 class="h3 mb-3 mt-5 font-weight-normal text-center">Pokój</h1>
+        <h1 class="mt-5 mb-3 text-center h3 font-weight-normal">Pokój</h1>
         <p>KOD: {{ code }}</p>
         <p>Lista osób w pokoju:</p>
         <div>
@@ -76,10 +76,19 @@
 
         <br><br>
 
-        <a href="/room?leaveRoom" class="text-white">Opuść pokój</a>
+        <a href="/room?leaveRoom" class="text-center text-white icon-wrapper">
+            <img src="{{ asset('assets/img/leaveRoom.png') }}" class="icon"><br />
+            Opuść pokój
+        </a>
         {% if isAdmin %}
-            | <a href="/room?closeRoom" class="text-white">Zamknij pokój</a>
-            | <a href="/room?startGame" class="text-white">Przejdź do gry</a>
+            <a href="/room?closeRoom" class="text-center text-white icon-wrapper">
+                <img src="{{ asset('assets/img/theEnd.png') }}" class="icon"><br />
+                Zamknij pokój
+            </a>
+            <a href="/room?startGame" class="text-center text-white icon-wrapper">
+                <img src="{{ asset('assets/img/startGame.png') }}" class="icon"><br />
+                Przejdź do gry
+            </a>
         {% endif %}
 
     </div>
