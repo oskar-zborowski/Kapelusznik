@@ -32,8 +32,8 @@ Wojciech Mila - Frontend Developer
             </a>
 
             {% if app.user %}
-                <a href="{{ path('my_account') }}" class="mx-sm-5 text-decoration-none text-white">
-                    <img src="{{ asset('images/'~app.user.profilePicture) }}" height="70" class="rounded-circle">
+                <a href="{{ path('my_account') }}" class="text-white mx-sm-5 text-decoration-none">
+                    <img src="{{ asset('images/'~app.user.profilePicture) }}" height="70" class="rounded-circle d-none d-sm-inline-block">
                     <span class="mx-1">{{ app.user.name }} [{{ app.user.code }}]</span>
                 </a>
             {% endif %}
@@ -43,7 +43,7 @@ Wojciech Mila - Frontend Developer
             </button>
 
             <div class="collapse navbar-collapse" id="navbarToggle">
-                <ul class="navbar-nav mr-auto">
+                <ul class="mr-auto navbar-nav">
                     {% if app.user %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('new_room') }}">Stwórz pokój</a>

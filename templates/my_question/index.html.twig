@@ -3,7 +3,7 @@
 {% block title %}{{ parent() }} - Moje pytania{% endblock %}
 
 {% block body %}
-    <div class="container p-5 main">
+    <div class="container pt-5 pb-5 p-sm-5 main">
 
         {% for message in app.flashes('success') %}
             <div class="alert alert-success">
@@ -21,7 +21,7 @@
             </div>
         {% endfor %}
 
-        <h1 class="h3 mb-3 mt-5 font-weight-normal text-center">Moje pytania</h1>
+        <h1 class="mt-5 mb-3 text-center h3 font-weight-normal">Moje pytania</h1>
 
         <br><div>Dodano: {{ numberOfQuestions }} pytań</div><br>
 
